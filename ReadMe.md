@@ -8,7 +8,7 @@
 
 
 ## Home Page
-<img src="images/home.png" width="100px">
+<img src="images/home.png" width="200px">
 
 ## Folder Page
 
