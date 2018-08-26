@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="01J-lp-oVM">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--View Controller-->
+        <scene sceneID="EHf-IW-A2E">
+            <objects>
+                <viewController id="01J-lp-oVM" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Ze5-6b-2t3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Q5-kq-66U">
+                                <rect key="frame" x="0.0" y="90" width="375" height="391"/>
+                                <subviews>
+                                    <imageView clearsContextBeforeDrawing="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="launchScreenIcon" translatesAutoresizingMaskIntoConstraints="NO" id="Pqm-7K-dej">
+                                        <rect key="frame" x="27" y="8" width="321" height="377"/>
+                                    </imageView>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="Pqm-7K-dej" firstAttribute="top" secondItem="4Q5-kq-66U" secondAttribute="top" constant="8" id="Hpc-A2-pmZ"/>
+                                    <constraint firstAttribute="trailing" secondItem="Pqm-7K-dej" secondAttribute="trailing" constant="27" id="JPX-Au-zSA"/>
+                                    <constraint firstAttribute="bottom" secondItem="Pqm-7K-dej" secondAttribute="bottom" constant="6.3300000000000001" id="KMy-ZC-kwq"/>
+                                    <constraint firstItem="Pqm-7K-dej" firstAttribute="leading" secondItem="4Q5-kq-66U" secondAttribute="leading" constant="27" id="ZAA-im-PMS"/>
+                                </constraints>
+                            </view>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photo Manager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhb-bu-XEi">
+                                <rect key="frame" x="0.0" y="518" width="375" height="129"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="129" id="yrH-nT-QwZ"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="GeezaPro-Bold" family="Geeza Pro" pointSize="50"/>
+                                <color key="textColor" red="0.99999600649999998" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstAttribute="trailing" secondItem="4Q5-kq-66U" secondAttribute="trailing" id="1lZ-qb-OCP"/>
+                            <constraint firstItem="rhb-bu-XEi" firstAttribute="centerX" secondItem="4Q5-kq-66U" secondAttribute="centerX" id="NC2-cw-AF0"/>
+                            <constraint firstItem="4Q5-kq-66U" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" constant="70" id="TUb-hE-0Yn"/>
+                            <constraint firstItem="4Q5-kq-66U" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leading" id="Xa7-7i-imt"/>
+                            <constraint firstItem="rhb-bu-XEi" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="pJh-SN-u1W"/>
+                            <constraint firstItem="rhb-bu-XEi" firstAttribute="top" secondItem="4Q5-kq-66U" secondAttribute="bottom" constant="37" id="qYM-Wm-ru5"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="rhb-bu-XEi" secondAttribute="bottom" constant="20" id="wTt-Om-VuT"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iYj-Kq-Ea1" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="52" y="374.66266866566718"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="launchScreenIcon" width="128" height="128"/>
+    </resources>
+</document>
