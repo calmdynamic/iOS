@@ -9,7 +9,9 @@
 import UIKit
 
 class FolderTypeCellCollectionViewCell: UICollectionViewCell {
+    static let IDENTIFIER = "folderTypeCell"
     var checkedCell: Bool!
+    var isEditing: Bool!
     @IBOutlet weak var folderTypeImage: UIImageView!
     @IBOutlet weak var folderTypeLabel: UILabel!
     @IBOutlet weak var uncheckedBoxImage: UIImageView!
@@ -18,6 +20,7 @@ class FolderTypeCellCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         self.checkedCell = false
+        self.isEditing = false
     }
     override var isSelected: Bool {
         didSet {
@@ -26,27 +29,24 @@ class FolderTypeCellCollectionViewCell: UICollectionViewCell {
             
         }
     }
-    var isEditing: Bool = false{
-        didSet{
-            uncheckedBoxImage!.isHidden = isEditing
-            
-            
-//                    if isEditing{
-//                        if folderTypeLabel.text == "Default"{
-//                            uncheckedBoxImage.isHidden = true
-//                            isUserInteractionEnabled = false
-//                        }else{
-//                            uncheckedBoxImage.isHidden = false
-//                        }
-//                    }else{
-//                         isUserInteractionEnabled = true
-//                        uncheckedBoxImage.isHidden = true
-//
-//                    }
-            
+    
+    
+    
+    
+    func cellImageWhenSettingPropertyAndScrollingRecreating(isEditing: Bool){
+        if isEditing{
+            if folderTypeLabel.text == "Default"{
+                uncheckedBoxImage.isHidden = true
+                isUserInteractionEnabled = false
+            }else{
+                uncheckedBoxImage.isHidden = false
+                isUserInteractionEnabled = true
+            }
+        }else{
+            isUserInteractionEnabled = true
+            uncheckedBoxImage.isHidden = true
             
         }
     }
-    
     
 }

@@ -12,105 +12,7 @@ import CoreLocation
 class UtilityService{
     private init(){}
     static let shared = UtilityService()
-//    func showAlert(title: String, message: String, buttonTitle: String, vc: UIViewController){
-//        let alert = UIAlertController(title: title, message: message, preferredStyle: UIAlertControllerStyle.alert)
-//        
-//        
-//        
-//        // add an action (button)
-//        alert.addAction(UIAlertAction(title: buttonTitle, style: UIAlertActionStyle.default, handler: nil))
-//        
-//        // show the alert
-//        vc.present(alert, animated: true, completion: nil)
-//    }
-    
-    
-    func repeatedFolderFound(_ existedfolders: List<Folder>, _ folderText: String!) -> Bool{
-        
-        if let tempFolderName = folderText?.trimmingCharacters(in: .whitespaces){
-            //var found = false
-            for i in existedfolders{
-                if tempFolderName == i.getName(){
-                    return true
-                }
-                
-            }
-            
-        }
-        return false
-    }
-    
-    func repeatedFolderFound(_ existedfolders: [Folder], _ folderText: String!) -> Bool{
-        
-        if let tempFolderName = folderText?.trimmingCharacters(in: .whitespaces){
-            //var found = false
-            for i in existedfolders{
-                if tempFolderName == i.getName(){
-                    return true
-                }
-                
-            }
-            
-        }
-        return false
-    }
-    
-    func repeatedTypeFound(_ existedTypes: Results<Type>, _ typeText: String!) -> Bool{
-        
-        if let tempTypeName = typeText?.trimmingCharacters(in: .whitespaces){
-            //var found = false
-            for i in existedTypes{
-                if tempTypeName == i.getName(){
-                    return true
-                }
-                
-            }
-            
-        }
-        return false
-    }
-    
-//    func repeatedTypeFound(_ existedTypes: [Type], _ typeText: String!) -> Bool{
-//        
-//        if let tempTypeName = typeText?.trimmingCharacters(in: .whitespaces){
-//            //var found = false
-//            for i in existedTypes{
-//                if tempTypeName == i.getName(){
-//                    return true
-//                }
-//                
-//            }
-//            
-//        }
-//        return false
-//    }
-    
-    func repeatedHashTagFound(_ existedHashtag: List<HashTag>, _ typeText: String!) -> Bool{
-        
-        if let tempTypeName = typeText?.trimmingCharacters(in: .whitespaces){
-            //var found = false
-            for i in existedHashtag{
-                if tempTypeName == i.getHashTag(){
-                    return true
-                }
-                
-            }
-            
-        }
-        return false
-    }
-    
-    func isTextEmpty(_ textString: String?) -> Bool{
-        if let tempString = textString?.trimmingCharacters(in: .whitespaces) {
-            if tempString.trimmingCharacters(in: .whitespaces).isEmpty{
-                return true
-            }
-            
-        }
-        
-        return false
-    }
-    
+
     
     func dummyData(){
         var hashTags: List<HashTag>
@@ -138,14 +40,8 @@ class UtilityService{
         var folders: List<Folder>
         folders = List<Folder>()
         
-        let fruiteFolder1 = Folder(name: "GrouseMountains", createdDate: Date(), images: imageCollection, imageCount: imageCollection.count)
+        let fruiteFolder1 = Folder(name: "GrouseMountains", createdDate: Date(), images: imageCollection, imageCount: imageCollection.count, categoryName: "Mountains")
 
-        
-        
-        
-        
-        
-        
         
         
         var rockyMountainhashTags: List<HashTag>
@@ -170,30 +66,14 @@ class UtilityService{
         rockyImageCollection.append(rockyMountainImages2)
 
 
-        let rockyFolder1 = Folder(name: "RockyMountains", createdDate: Date(), images: rockyImageCollection, imageCount: rockyImageCollection.count)
-        
-        
-        
-        
-        
+        let rockyFolder1 = Folder(name: "RockyMountains", createdDate: Date(), images: rockyImageCollection, imageCount: rockyImageCollection.count, categoryName: "Mountains")
+
         
         var mountainFolders: List<Folder>
         mountainFolders = List<Folder>()
         
         mountainFolders.append(fruiteFolder1)
         mountainFolders.append(rockyFolder1)
-     
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         
         
         
@@ -219,21 +99,21 @@ class UtilityService{
         olympicImageCollection.append(olympicImages2)
         
         
-        let olympicFolder1 = Folder(name: "Olympics", createdDate: Date(), images: olympicImageCollection, imageCount: olympicImageCollection.count)
-        
-        
-        
-        
         
         
         var sportFolders: List<Folder>
         sportFolders = List<Folder>()
         
-        sportFolders.append(olympicFolder1)
+        
+        for _ in 1...100{
+            let olympicFolder1 = Folder(name: "Olympics", createdDate: Date(), images: olympicImageCollection, imageCount: olympicImageCollection.count, categoryName: "Sports")
+            
+            sportFolders.append(olympicFolder1)
+        }
         
 
         
-        let animalType =  Type(name: "Mountains", folders: mountainFolders, folderCount: mountainFolders.count)
+        let mountainType =  Type(name: "Mountains", folders: mountainFolders, folderCount: mountainFolders.count)
         let sportType = Type(name: "Sports", folders: sportFolders, folderCount: sportFolders.count)
         let homeType = Type(name: "Home", folders: folders, folderCount: 0)
         let schoolType = Type(name: "School", folders: folders, folderCount: 0)
@@ -254,7 +134,7 @@ class UtilityService{
         let historyType = Type(name: "History", folders: folders, folderCount: 0)
         let travelType = Type(name: "Travel", folders: folders, folderCount: 0)
         
-        RealmService.shared.create(animalType)
+        RealmService.shared.create(mountainType)
         RealmService.shared.create(sportType)
         RealmService.shared.create(homeType)
         RealmService.shared.create(schoolType)
@@ -283,7 +163,7 @@ class UtilityService{
     
     func defaultData(){
         let imageCollection = List<Image>()
-        let defaultFolder = Folder(name: "Default", createdDate: Date(), images: imageCollection, imageCount: imageCollection.count)
+        let defaultFolder = Folder(name: "Default", createdDate: Date(), images: imageCollection, imageCount: imageCollection.count, categoryName: "Default")
         var defaultFolders: List<Folder>
         defaultFolders = List<Folder>()
         defaultFolders.append(defaultFolder)
@@ -315,70 +195,7 @@ class UtilityService{
             //return
         }
     }
-    
-    func cameraChecker(pickerController: UIImagePickerController, viewController: UIViewController) -> Bool{
-        if !UIImagePickerController.isSourceTypeAvailable(.camera){
-            
-            let alertController = UIAlertController.init(title: nil, message: "Device has no camera.", preferredStyle: .alert)
-            
-            let okAction = UIAlertAction.init(title: "Alright", style: .default, handler: {(alert: UIAlertAction!) in
-            })
-            
-            alertController.addAction(okAction)
-            viewController.present(alertController, animated: true, completion: nil)
-        }
-        else{
-            pickerController.sourceType = UIImagePickerControllerSourceType.camera
-            viewController.present(pickerController, animated: true, completion: nil)
-            return true
-        }
-        return false
-    }
-    
-    func addImageForTestingToRealm(selectedFolder: Folder, selectedFolderTypeName: String, location: Location)->Image{
-        let realmImages = selectedFolder.getImages()
-        
-        var images: List<Image>
-        if realmImages.isEmpty{
-            images = List<Image>()
-        }else{
-            images = List<Image>()
-            for image in realmImages{
-                images.append(image)
-            }
-        }
-        
-        let data = NSData(data: UIImageJPEGRepresentation(#imageLiteral(resourceName: "testing"), 0.9)!)
-        
-        let hashTags = List<HashTag>()
-        
-        let hashTag1 = HashTag(hashTag: "#"+selectedFolder.getName())
-        let hashTag2 = HashTag(hashTag: "#"+selectedFolderTypeName)
-        
-        if selectedFolder.getName() == "Default"{
-            hashTags.append(hashTag1)
-        }else{
-            hashTags.append(hashTag1)
-            hashTags.append(hashTag2)
-        }
-        
-        // in simulator it goes so quickly no enough time to get valiue so nil
-        /// in real device you need time to take a photo so 8000millisecond
-        //it neeeds at least 1 second to get value
-        // i could delay it se not good
-        var newLocation = Location(latitude: 47, longtitude: -122, street: "", city: "", province: "")
-        if location != nil{
-            newLocation = Location(latitude: location.getLatitude(), longtitude: location.getLongtitude(), street: location.getStreet(), city: location.getCity(), province: location.getProvince())
-        }
-        let newRealmFormattedDate = Image(dateCreated: Date(), imageBinaryData: data, hashTags: hashTags, location: newLocation)
-        //print(self.location)
-        
-        images.append(newRealmFormattedDate)
-        
-        RealmService.shared.update(selectedFolder, with: ["name": selectedFolder.getName(), "createdDate": selectedFolder.getCreatedDate(), "imageCount": images.count, "images": images])
-        
-        return newRealmFormattedDate
-    }
+
     
     func addImageToDatabase(selectedFolder: Folder, selectedFolderType: String, newImage: UIImage, location: Location)->Image{
         

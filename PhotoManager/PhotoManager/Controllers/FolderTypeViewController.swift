@@ -1,302 +1,111 @@
 //
-//  FolderTypeViewController2.swift
-//  FinalProject
+//  FolderTypeViewController.swift
+//  PhotoManager
 //
-//  Created by Jason Chih-Yuan on 2018-03-12.
+//  Created by Jason Chih-Yuan on 2018-03-12
+//  Updated by Jason Chih-Yuan on 2018-08-31
 //  Copyright © 2018 Jason Lai. All rights reserved.
 //
 
 import UIKit
-class FolderTypeViewController: UIViewController, UISearchBarDelegate {
-
-    lazy var searchBar : UISearchBar = {
-        let s = UISearchBar()
-        s.placeholder = "Search Folder Types"
-        s.delegate = self
-        s.barTintColor = UIColor.black// color you like
-        s.barStyle = .default
-        s.sizeToFit()
-        return s
-    }()
-    let searchController = UISearchController(searchResultsController: nil)
-    
-    var currentIndexPath: IndexPath!
-    //var edit:Bool!
-    let identifier = "folderTypeCell"
-    let segueIdentfier = "typeFolderSegue"
-    var selectedFolderType: Type!
+class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFieldDelegate {
+    static let NUM_OF_LIMIT_WORD_CHARACTER = 9
+    var searchBar : UISearchBar = UISearchBar()
     var folderTypes: TypeList!
-    var numOfSelection: Int!
     
-
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var updateButton: UIBarButtonItem!
-    
     @IBOutlet weak var deleteButton: UIBarButtonItem!
     @IBOutlet weak var addButton: UIBarButtonItem!
+    
+    //a function will be performed after viewDidLoad()
     override func viewWillAppear(_ animated: Bool) {
-
-        self.tabBarController?.tabBar.isHidden = false
-        toolbar.isHidden = true
         folderTypes = TypeList()
         folderTypes.getFolderTypeDataFromRealm()
+        folderTypes.setDefaultSort()
+        SearchBarService.sortFolderTypeWhenClickingOrNil(searchBar: searchBar, folderTypes: folderTypes)
+        CollectionViewService.initCollectionViewWhenWillAppear(tabBar: (self.tabBarController?.tabBar)!, toolbar: toolbar, searchBar: searchBar, collectionView: collectionView)
         
-        numOfSelection = 0
-        deselectAll()
-        if searchBar.text != ""{
-            folderTypes.filterFolderType(sortBy: searchBar.text ?? "")
-        }
-        collectionView.reloadData()
-        
-        self.folderTypes.setDefaultSort()
     }
     
-
+    
+    //a function will be performed when it is first launched
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NavigationService.initNavigationItem(title: "Types", navigationItem: navigationItem, editButtonItem: editButtonItem)
         
-        navigationItem.title = "Types"
+        SearchBarService.setSearchBarProperty(searchBar: self.searchBar, searchBarDelegate: self, placeholder: "Search Folder Types")
+        CollectionViewService.pinHeaderToTopWhenScrolling(collectionView: self.collectionView)
         
-        searchBar.showsBookmarkButton = true
-        searchBar.setImage(UIImage(named: "sort.png"), for: .bookmark, state: .normal)
-        
-        
-        searchBar.enablesReturnKeyAutomatically = false
-        
-        let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-        layout?.sectionHeadersPinToVisibleBounds = true
-        
-        collectionView?.register(UICollectionViewCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: "folderTypeSearchBar")
-
-        
-        collectionView.dataSource = self
-        
-        collectionView.delegate = self
-        
-        navigationItem.rightBarButtonItem = editButtonItem
-        
-        toolbar.isHidden = true
-        
-        //self.edit = false
-
-        self.collectionView?.reloadData()
-        
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
-    
-    func deselectAll(){
-        if let indexpaths = self.collectionView?.indexPathsForSelectedItems{
-            for i in indexpaths{
-                let cell = collectionView.cellForItem(at: i as IndexPath)
-                if (cell?.isSelected)!{
-                    self.collectionView.deselectItem(at: i, animated: false)
-                }
-            }
-        }
-    }
-    
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?)  {
- 
-        let indexpaths = self.collectionView?.indexPathsForSelectedItems
-        self.selectedFolderType = self.folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
-        
-        if selectedFolderType.getName() != "Default"{
-            if segue.identifier == segueIdentfier{
-                let folderVC = segue.destination as! FolderViewController
-
-                self.selectedFolderType = self.folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
-                folderVC.folderType = self.selectedFolderType
-
-                
-            }
-            
-        } else {
-            if segue.identifier == "typeImageSegue"{
-            let imageVC = segue.destination as! ImageViewController
-            self.selectedFolderType = self.folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
-            let selectedFolder = self.selectedFolderType.getFolders()[0]
-
-            imageVC.selectedFolderType = self.selectedFolderType
-            imageVC.selectedFolder = selectedFolder
-
-        }
-        }
+        CollectionViewService.initCollectionView(collectionView: self.collectionView, collectionDataSource: self, collectionDelegate: self)
         
     }
     
-   
+    //a function to be performed when a user click a folder
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?)  {
+        TransitionToOtherViewService.folderTypeViewTransition(folderTypes: self.folderTypes, segue: segue, collectionView: self.collectionView)
+        
+    }
+    
+    
+    //a function to check if it can go to the next folder and to be performed before prepare()
     override func shouldPerformSegue(withIdentifier: String, sender: Any?) -> Bool {
-        searchBar.endEditing(true)
-        
-        var result = false
-        
-        if (!isEditing == true){
-            result = true
-        }else{
-            result = false
-        }
-        
-        return result
+        return !isEditing
     }
-
+    
+    
+    //a function to be performed when a user clicks edit button
     override func setEditing(_ editing: Bool, animated: Bool) {
-        //isEditing = !isEditing
         super.setEditing(editing, animated: animated)
-//        if editing{
-//            //self.tabBarController?.tabBar.isHidden = true
-//            //self.searchBar.showsBookmarkButton = false
-//            self.edit = true
-//        }else{
-//            self.edit = false
-//            //self.searchBar.showsBookmarkButton = true
-//            //self.tabBarController?.tabBar.isHidden = false
-//        }
         
-        collectionView?.allowsMultipleSelection = editing
-        toolbar.isHidden = !editing
-        self.searchBar.showsBookmarkButton = !editing
-        self.tabBarController?.tabBar.isHidden = editing
-        addButton.isEnabled = true
-        deleteButton.isEnabled = false
-        updateButton.isEnabled = false
-        collectionView.reloadData()
-        
-        
-        
-//        if let indexPaths = collectionView?.indexPathsForVisibleItems {
-//            for indexPath in indexPaths {
-//                if let cell = collectionView?.cellForItem(at: indexPath) as? PhotoCell {
-//                    cell.isEditing = editing
-//                }
-//            }
-//        }
-//
-        
-        
-        //isEditing = !isEditing
-//        let indexpaths = self.collectionView?.indexPathsForVisibleItems
-//
-//
-//        for indexPath in indexpaths!{
-//
-//         let cell = collectionView?.cellForItem(at: indexPath) as! FolderTypeCellCollectionViewCell
-//
-//
-//            cell.isEditing = editing
-//
-//        }
-//        self.collectionView?.reloadData()
+        SearchBarService.searchBarChangeWhenSetEditng(searchBar: self.searchBar, editing: editing)
+        TabBarService.tabBarChangeWhenSetEditing(tabBarController: self.tabBarController!, editing: editing)
+        ToolBarService.toolbarItemChangeWhenSetEditing(toolbar: self.toolbar, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton, editing: editing)
+        CollectionViewService.collectionViewChnageWhenSetEditing(collectionView: self.collectionView, editing: editing)
     }
-
-
+    
+    
+    
+    //add a folder type to realm database
     @IBAction func addFolderType(_ sender: UIBarButtonItem) {
-
-        AlertDialog.showAlertMessage(controller: self, title: "Add a new type", message: "Enter a new folder type name", leftBtnTitle: "Cancel", rightBtnTitle: "Confirm", completion: { folderType in
-            let tempTypeName = folderType.trimmingCharacters(in: .whitespaces)
-            if !UtilityService.shared.isTextEmpty(tempTypeName){
-
-                if self.folderTypes.foundRepeatedType(folderType){
-                    AlertDialog.showAlertMessage(controller: self, title: "Existed Folder Error", message: "The folder type is already existed, please create another unique name for this folder type", btnTitle: "Confirm")
-                }else{
-                    //add a new folder type to the collection view
-                    self.folderTypes.addFolderTypeToRealm(typename: tempTypeName)
-                    self.collectionView?.reloadData()
-
-                }
-            }else{
-                AlertDialog.showAlertMessage(controller: self, title: "Null String Error", message: "We don't accept the empty string; please give your folder a descriptive name", btnTitle: "Confirm")
-            }
-
-            self.initButtons()
-
-        }, textFieldPlaceHolderTitle: "Enter Folder Type Name")
-
-    }
-
-    @IBAction func deleteFolderType(_ sender: UIBarButtonItem) {
-
-        AlertDialog.showAlertMessage(controller: self, title: "Delete this folder type", message: "Ensure to delete this folder type?", leftBtnTitle: "Cancel", rightBtnTitle: "Delete", completion: { (_) in
-
-            let indexpaths = self.collectionView?.indexPathsForSelectedItems
-            if let indexpaths = indexpaths {
-
-                for item  in indexpaths {
-                    self.collectionView?.deselectItem(at: (item), animated: true)
-                }
-                self.folderTypes.deleteFolderTypeFromRealm(indexpaths: indexpaths)
-
-                self.collectionView?.deleteItems(at: indexpaths)
-                self.initButtons()
-            }
-
-        }, textFieldPlaceHolderTitle: "")
-
-    }
-
-    @IBAction func updateFolderType(_ sender: UIBarButtonItem) {
+        CollectionViewService.addTypesToRealm(folderTypes: self.folderTypes, controller: self, collectionView: self.collectionView, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton, textFieldDelegate: self)
         
-        AlertDialog.showAlertMessage(controller: self, title: "Modify name?", message: "Enter a new folder name", leftBtnTitle: "Cancel", rightBtnTitle: "Update", completion: {(modifiedName) in
-            
-            let indexpaths = self.collectionView?.indexPathsForSelectedItems
-            if indexpaths!.count == 1 {
-                self.folderTypes.updateFolderTypeFromRealm(indexpaths: indexpaths!, modifiedName: modifiedName)
-                self.initButtons()
-                self.collectionView?.reloadData()
-            }
-            
-        }, completion2: {(textField, confirmAction, alertController) in
-            let indexpaths = self.collectionView?.indexPathsForSelectedItems
-            if indexpaths!.count == 1 {
-                for indexPath in indexpaths!{
-                    
-                    let folderTypeName = self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getName()
-                    textField.text = folderTypeName
-                    confirmAction.isEnabled = false
-                    
-                    textField.placeholder = "Enter Folder Type Name"
-                    NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
-                        
-                        let modifiedName = alertController.textFields?[0].text
-                        
-                        if !self.folderTypes.foundRepeatedType(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)!{
-                            confirmAction.isEnabled = true
-                        }else{
-                            confirmAction.isEnabled = false
-                        }
-                        
-                        
-                    }
-                    
-                }
-            }
-            
-        })
-
     }
-
-    func initButtons(){
-        addButton.isEnabled = true
-        updateButton.isEnabled = false
-        deleteButton.isEnabled = false
+    
+    //delete one or many folder type from realm database
+    @IBAction func deleteFolderType(_ sender: UIBarButtonItem) {
+        CollectionViewService.deleteTypesToRealm(folderTypes: self.folderTypes, controller: self, collectionView: self.collectionView, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton, textFieldDelegate: self)
+       
     }
+    
+    //update a folder type from realm database
+    @IBAction func updateFolderType(_ sender: UIBarButtonItem) {
+        CollectionViewService.updateTypesToRealm(folderTypes: self.folderTypes, controller: self, collectionView: self.collectionView, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton, textFieldDelegate: self)
+        
+    }
+    
+    //a function to limit number of character
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text else {return true}
+        let newLength = text.count + string.count - range.length
+        return newLength <= FolderTypeViewController.NUM_OF_LIMIT_WORD_CHARACTER
+    }
+    
 }
 
 
 extension FolderTypeViewController: UICollectionViewDataSource{
+    //a function to set number of cell to be shown
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return self.folderTypes.getFolderTypeSize()
     }
     
-    
-    
+    //a function to set cell property when user see the view and scroll the view
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.identifier, for: indexPath) as! FolderTypeCellCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FolderTypeCellCollectionViewCell.IDENTIFIER, for: indexPath) as! FolderTypeCellCollectionViewCell
         
         let folderNmaeString = self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getName()
         cell.folderTypeLabel.text = folderNmaeString
@@ -305,168 +114,87 @@ extension FolderTypeViewController: UICollectionViewDataSource{
         if cell.folderTypeLabel.text == "Default"{
             cell.numOfFolders.text = "\(self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getFolders()[0].getImageCount())"
         }else{
-        cell.numOfFolders.text = numOfFolders == 0 ? "Empty" : "\(numOfFolders)" 
+            cell.numOfFolders.text = numOfFolders == 0 ? "Empty" : "\(numOfFolders)"
         }
         
-        //isEditing = !isEditing
-        if isEditing{
-            if cell.folderTypeLabel.text == "Default"{
-                cell.uncheckedBoxImage.isHidden = true
-                cell.isUserInteractionEnabled = false
-            }else{
-                cell.uncheckedBoxImage.isHidden = false
-            }
-        }else{
-             cell.isUserInteractionEnabled = true
-            cell.uncheckedBoxImage.isHidden = true
-
-        }
-        
-    
+        cell.cellImageWhenSettingPropertyAndScrollingRecreating(isEditing: isEditing)
         
         return cell
     }
+    
 }
 
 extension FolderTypeViewController: UICollectionViewDelegate{
+    
+    //a function to be performed when a cell is selected
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-
-        
+        print("1")
         let indexpaths = self.collectionView?.indexPathsForSelectedItems
-        self.selectedFolderType = self.folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
+        let selectedFolderType = self.folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
         
         if !isEditing{
-        if selectedFolderType.getName() != "Default"{
-            self.performSegue(withIdentifier: self.segueIdentfier, sender: nil)
-
-        } else {
-            self.performSegue(withIdentifier: "typeImageSegue", sender: nil)
-            
+            if selectedFolderType.getName() != TransitionToOtherViewService.DEFAULT_FOLDER_TYPE_NAME{
+                self.performSegue(withIdentifier: TransitionToOtherViewService.SEGUE_IDENTIFIER_FOR_TYPE_TO_FOLDER, sender: nil)
+                
+            } else {
+                self.performSegue(withIdentifier: TransitionToOtherViewService.SEGUE_IDENTIFIER_FOR_TYPE_TO_IMAGE, sender: nil)
+                
+            }
         }
-        }
+        ToolBarService.toolbarItemWhenCellIsClickedAndDeclicked(collectionView: self.collectionView, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton)
         
-        
-        self.numOfSelection = self.collectionView?.indexPathsForSelectedItems?.count
-        if numOfSelection == 0{
-            updateButton.isEnabled = false
-            deleteButton.isEnabled = false
-            addButton.isEnabled = true
-        }else if numOfSelection == 1{
-            updateButton.isEnabled = true
-            deleteButton.isEnabled = true
-            addButton.isEnabled = false
-        }else if numOfSelection > 1{
-            updateButton.isEnabled = false
-        }
     }
     
+    //a function to be performed when you deselect item
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-  
-        self.numOfSelection = self.collectionView?.indexPathsForSelectedItems?.count
-        if numOfSelection == 0{
-            updateButton.isEnabled = false
-            deleteButton.isEnabled = false
-            addButton.isEnabled = true
-        }else if numOfSelection == 1{
-            updateButton.isEnabled = true
-            deleteButton.isEnabled = true
-            addButton.isEnabled = false
-        }else if numOfSelection > 1{
-            updateButton.isEnabled = false
-        }
-
+        print("2")
+        ToolBarService.toolbarItemWhenCellIsClickedAndDeclicked(collectionView: self.collectionView, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton)
     }
     
-
-
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        return CGSize(width: view.frame.width, height: 40)
-    }
-    
+    //a function to initialize header
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "folderTypeSearchBar", for: indexPath)
-        header.addSubview(searchBar)
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
-        searchBar.leftAnchor.constraint(equalTo: header.leftAnchor).isActive = true
-        searchBar.rightAnchor.constraint(equalTo: header.rightAnchor).isActive = true
-        searchBar.topAnchor.constraint(equalTo: header.topAnchor).isActive = true
-        searchBar.bottomAnchor.constraint(equalTo: header.bottomAnchor).isActive = true
-        return header
+        
+        return SearchBarService.createSearchBarGraphic(searchBar: searchBar, header: header)
     }
-
- 
+    
+    //a function to change all button status when starting editing on search bar
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        let cells = collectionView.visibleCells
-        for i in cells{
-            i.alpha = 0.5
-        }
-        self.navigationItem.rightBarButtonItem?.isEnabled = false
-        self.collectionView.allowsSelection = false
-        self.searchBar.showsBookmarkButton = false
+        //editButtonItem.isEnabled = false
+        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, isBeginEditing: true)
     }
     
+    //a function to change all button status when finishing editing on search bar
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        initailization()
+        //editButtonItem.isEnabled = true
+        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, isBeginEditing: false)
     }
     
-    func initailization(){
-        let cells = collectionView.visibleCells
-        for i in cells{
-            i.alpha = 1
-        }
-        self.navigationItem.rightBarButtonItem?.isEnabled = true
-        self.collectionView.allowsSelection = true
-        self.searchBar.showsBookmarkButton = true
-    }
-
-    
-    
+    //a function will be performed when you click enter on search bar
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-
+        
         self.folderTypes.clearFolderTypeList()
         self.folderTypes.getFolderTypeDataFromRealm()
-
-
-        if searchBar.text != ""{
-            self.folderTypes.filterFolderType(sortBy: "")
-
-        }
-
+        SearchBarService.sortFolderTypeWhenClickingOrNil(searchBar: searchBar, folderTypes: folderTypes)
         self.collectionView?.reloadData()
         searchBar.endEditing(true)
     }
     
+    //a function will be performed when you scroll the view.
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    
-        
         searchBar.endEditing(true)
-       
     }
-
+    
+    
+    
+    //a function will be performed when you click sort button
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
-        let actionSheet = UIAlertController(title: "Choose Package Type", message: nil , preferredStyle: .actionSheet)
-        actionSheet.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { (_) in
-
-            self.folderTypes.sortByName()
-            self.collectionView.reloadData()
-        }))
-
-        actionSheet.addAction(UIAlertAction(title: "Sort by created date", style: .default, handler: { (_) in
-            self.folderTypes.sortByDateCreated()
-            self.collectionView.reloadData()
-        } ))
-        actionSheet.addAction(UIAlertAction(title: "Sort by number of folders", style: .default, handler: {(_) in
-            self.folderTypes.sortByNumOfFolder()
-            self.collectionView.reloadData()
-        } ))
+        SearchBarService.sortByAType(folderTypes: self.folderTypes, controller: self, collectionView: self.collectionView, searchBar: self.searchBar)
         
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel , handler: {
-            (action: UIAlertAction) -> Void in
-            actionSheet.dismiss(animated: true, completion: nil)
-        }))
-        present( actionSheet , animated:  true , completion:  nil)
-
     }
+    
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        print("tttttt")
+//    }
     
 }

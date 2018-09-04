@@ -26,7 +26,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
     var selectedFolderType: Type!
     var newImage: UIImage!
     var edit:Bool!
-    var selectedImage: Image!
+    //var selectedImage: Image!
     var numOfSelection: Int!
     
     var numOfSuccess: Double!
@@ -46,7 +46,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
     @IBOutlet weak var downloadBtn: UIButton!
     
     
-    var images: [Image]!
+    //var images: [Image]!
     
     let pickerController = UIImagePickerController()
     
@@ -54,6 +54,12 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
     let segueIdentfier = "imageDetailSegue"
     let segueIdentfier2 = "downloadSegue"
     let identifier = "imageCell"
+    
+    
+//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        print("dfsfdsfdsfsds")
+//    }
+    
     override func viewWillAppear(_ animated: Bool) {
         isEditing = false
         
@@ -68,10 +74,13 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
         
         let tempFolders = tempFolderType[0].getFolders().filter("name = %@", selectedFolder.getName() )
         
-        self.images = [Image]()
-        for i in tempFolders[0].getImages(){
-            images.append(i)
-        }
+         //self.folderType.setFolderArray(folders: Array(self.folderType.getFolders()))
+
+        self.selectedFolder.setImageArray(imageArray: Array(self.selectedFolder.getImages()))
+//        self.images = [Image]()
+//        for i in tempFolders[0].getImages(){
+//            images.append(i)
+//        }
     }
 
     override func viewDidLoad() {
@@ -100,9 +109,9 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
             let imageDetailVC = segue.destination as! ImageDetailsViewController
             let indexpaths = self.collectionView?.indexPathsForSelectedItems
 
-            self.selectedImage = images[indexpaths![0].item]
+            //self.selectedImage = self.selectedFolder.getImageArray()[indexpaths![0].item]
 
-            imageDetailVC.image = self.selectedImage
+            imageDetailVC.image = self.selectedFolder.getImageArray()[indexpaths![0].item]
 
         }
 
@@ -158,8 +167,16 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
         self.locationMgr.requestWhenInUseAuthorization()
         self.locationMgr.startUpdatingLocation()
         }
-        if !UtilityService.shared.cameraChecker(pickerController: pickerController, viewController: self){
-            self.addImageForTesting()
+        
+        //if no camera ability; or in simulator
+        if !CameraService.cameraChecker(pickerController: pickerController, viewController: self){
+            
+            self.selectedFolder.addImageForTestingToRealm()
+            self.collectionView?.reloadData()
+            
+            if Reachability.isConnectedToNetwork(){
+                locationMgr.stopUpdatingLocation()
+            }
             
         }
 
@@ -174,28 +191,14 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
     }
     
     
-
-    
-    func addImageForTesting(){
-        let realmImage = UtilityService.shared.addImageForTestingToRealm(selectedFolder: self.selectedFolder, selectedFolderTypeName: self.selectedFolderType.getName(), location: self.location)
-        
-        self.images.append(realmImage)
-        self.collectionView?.reloadData()
-        
-        if Reachability.isConnectedToNetwork(){
-            locationMgr.stopUpdatingLocation()
-        }
-        
-    }
-    
-    
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         
         picker.dismiss(animated: true, completion: nil)
         newImage = info[UIImagePickerControllerOriginalImage] as? UIImage
         let realmImage = UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.newImage, location: self.location)
         
-        self.images.append(realmImage)
+        self.selectedFolder.addElementToImageArray(image: realmImage)
+        //self.images.append(realmImage)
         self.collectionView?.reloadData()
         
         if Reachability.isConnectedToNetwork(){
@@ -225,7 +228,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                 for item  in indexpaths {
                     self.collectionView?.deselectItem(at: (item), animated: true)
                     
-                    let selectedImage = self.images[item.row]
+                    let selectedImage = self.selectedFolder.getImageArray()[item.row]
                 
                     let realm = try! Realm()
                     try! realm.write {
@@ -249,9 +252,11 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                 
                 let tempFolders = tempFolderType[0].getFolders().filter("name = %@", self.selectedFolder.getName() )
                 
-                self.images = [Image]()
+                self.selectedFolder.clearImageArray()
+                //self.images = [Image]()
                 for i in tempFolders[0].getImages(){
-                    self.images.append(i)
+                    self.selectedFolder.addElementToImageArray(image: i)
+                    //self.images.append(i)
                 }
                 
                 self.collectionView!.deleteItems(at: indexpaths)
@@ -276,9 +281,9 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
 
         let indexpaths = self.collectionView?.indexPathsForSelectedItems
       
-        self.selectedImage = images[indexpaths![0].item]
+        //self.selectedImage = self.selectedFolder.getImageArray()[indexpaths![0].item]
         
-        let currentHashTags = self.selectedImage.getHashTags()
+        let currentHashTags = self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags()
         
         var hashtagsString = ""
         for i in currentHashTags{
@@ -321,16 +326,17 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                                 anyProblem = true
                             }
                             
-                            if (i == ""){
+                            if (i == "#".trimmingCharacters(in: .whitespaces)){
                                 title = "No empty hashtags"
                                 anyProblem = true
                             }
                             
+                           
                             
-                            if (UtilityService.shared.repeatedHashTagFound(self.selectedImage.getHashTags(), i)){
+                            if ( self.selectedFolder.getImageArray()[indexpaths![0].item].repeatedHashTagFound(i)){
                                 numberOfDuplicated += 1
                                 title = "The hash tag is already in the image; please do not duplicate any hashtags"
-                                if(numberOfDuplicated > self.selectedImage.getHashTags().count){
+                                if(numberOfDuplicated >  self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags().count){
                                     anyProblem = true
                                 }
                             }
@@ -346,11 +352,11 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                             hashtags.append(HashTag(hashTag: i))
                         }
                     
-                        for i in self.selectedImage.getHashTags(){
+                        for i in  self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags(){
                             RealmService.shared.delete(i)
                         }
 
-                        RealmService.shared.update(self.selectedImage, with: ["dateCreated": self.selectedImage.getDateCreated(), "imageBinaryData":self.selectedImage.getImageBinaryData(),"hashTags": hashtags])
+                        RealmService.shared.update( self.selectedFolder.getImageArray()[indexpaths![0].item], with: ["dateCreated":  self.selectedFolder.getImageArray()[indexpaths![0].item].getDateCreated(), "imageBinaryData": self.selectedFolder.getImageArray()[indexpaths![0].item].getImageBinaryData(),"hashTags": hashtags])
 
                 }
                 }
@@ -383,7 +389,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
         }else{
             updateHashtags.isEnabled = true
         }
-        actionSheet.addAction(UIAlertAction(title: "Add a HashTag to Multiple Images", style: .default, handler: {
+        actionSheet.addAction(UIAlertAction(title: "Add a HashTag to one or multiple Image(s)", style: .default, handler: {
              (alert: UIAlertAction!) -> Void in
             let alertController = UIAlertController(title: "Add name?", message: "Enter the hashtag name", preferredStyle: .alert)
             
@@ -397,29 +403,10 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                 if let indexpaths = indexpaths {
                     for item  in indexpaths {
                         self.collectionView?.deselectItem(at: (item), animated: true)
-                        
-                        let image = self.images[item.row]
-                        
-                        
-                        var hashtags: List<HashTag>
-                        hashtags = List<HashTag>()
-                        
-                        for i in image.getHashTags(){
-       
-                            hashtags.append(HashTag(hashTag: i.getHashTag()))
-                        }
-                        
-                        hashtags.append(HashTag(hashTag: newHashtagName!))
-                        
-                        for i in image.getHashTags(){
-                            RealmService.shared.delete(i)
-                        }
-                        
-
-                        RealmService.shared.update(image, with: ["dateCreated": image.getDateCreated(), "imageBinaryData":image.getImageBinaryData(),"hashTags": hashtags])
-                        
 
                     }
+                    self.selectedFolder.addOneOrMultipleHashtagToImages(indexpaths: indexpaths, newHashtagName: newHashtagName!)
+                    
 
                 }
             }
@@ -444,8 +431,8 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
                              if let indexpaths = indexpaths {
                             for item  in indexpaths {
                                 
-                                let image = self.images[item.row]
-                                if !UtilityService.shared.repeatedHashTagFound(image.getHashTags(), modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
+                                let image = self.selectedFolder.getImageArray()[item.row]
+                                if !self.selectedFolder.getImageArray()[indexpaths[0].item].repeatedHashTagFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
                                 confirmAction.isEnabled = true
                             }else{
                                 confirmAction.isEnabled = false
@@ -550,7 +537,7 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
             selectionRemaining = indexpaths.count
             for item  in indexpaths {
                 self.collectionView?.deselectItem(at: (item), animated: true)
-                let selectedImage = self.images[item.row]
+                let selectedImage = self.selectedFolder.getImageArray()[item.row]
                 
                 self.uploadMedia(okButton ,Double(selectionRemaining), progressBar: progressBar, progressPercent: progressPercent, selectedImage: selectedImage) { url in
                     if url != nil {
@@ -654,14 +641,14 @@ class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UIN
 extension ImageViewController: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        return self.images.count
+        return self.selectedFolder.getImageArray().count
     }
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.identifier, for: indexPath) as! ImageCollectionViewCell
         
-        let image = UIImage(data: (self.images[indexPath.item].getImageBinaryData()) as Data, scale:1.0)
+        let image = UIImage(data: (self.selectedFolder.getImageArray() [indexPath.item].getImageBinaryData()) as Data, scale:1.0)
         
         cell.photoImage.image = image
         

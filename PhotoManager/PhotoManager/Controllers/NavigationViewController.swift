@@ -117,7 +117,7 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
             self.locationMgr.startUpdatingLocation()
         }
         
-        if(!UtilityService.shared.cameraChecker(pickerController: pickerController, viewController: self)){
+        if(!CameraService.cameraChecker(pickerController: pickerController, viewController: self)){
             self.addImageForTesting()
             
         }
@@ -136,7 +136,8 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
     
     func addImageForTesting(){
 
-        UtilityService.shared.addImageForTestingToRealm(selectedFolder: self.selectedFolder, selectedFolderTypeName: self.selectedFolderType.getName(), location: self.location)
+        self.selectedFolder.addImageForTestingToRealm()
+        //tilityService.shared.addImageForTestingToRealm(selectedFolder: self.selectedFolder, selectedFolderTypeName: self.selectedFolderType.getName(), location: self.location)
         
         if Reachability.isConnectedToNetwork(){
             locationMgr.stopUpdatingLocation()

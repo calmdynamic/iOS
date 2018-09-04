@@ -106,6 +106,42 @@ class Image: Object{
         return dict as NSDictionary
     }
     
+    public func repeatedHashTagFound(_ typeText: String!) -> Bool{
+            
+        if let tempTypeName = typeText?.trimmingCharacters(in: .whitespaces){
+            //var found = false
+            for i in self.hashTags{
+                if tempTypeName == i.getHashTag(){
+                    return true
+                }
+                
+            }
+            
+        }
+        return false
+        
+    }
+    
+    public func addOneHashtagToRealm(newHashtagName: String){
+                
+        var hashtags: List<HashTag>
+        hashtags = List<HashTag>()
+        
+        for i in self.getHashTags(){
+            
+            hashtags.append(HashTag(hashTag: i.getHashTag()))
+        }
+        
+        hashtags.append(HashTag(hashTag: newHashtagName))
+        
+        for i in self.getHashTags(){
+            RealmService.shared.delete(i)
+        }
+        
+        
+        RealmService.shared.update(self, with: ["dateCreated": self.getDateCreated(), "imageBinaryData": self.getImageBinaryData(),"hashTags": hashtags])
+        
+    }
 
    
     

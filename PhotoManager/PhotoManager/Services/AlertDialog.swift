@@ -41,7 +41,7 @@ class AlertDialog{
         controller.present(alertController, animated: true, completion: nil)
     }
     
-    public static func showAlertMessage(controller: UIViewController,title: String, message: String, leftBtnTitle: String, rightBtnTitle: String, completion: @escaping (String) -> Void, textFieldPlaceHolderTitle: String){
+    public static func showAlertMessage(controller: UIViewController,title: String, message: String, leftBtnTitle: String, rightBtnTitle: String, textFieldDelegate: UITextFieldDelegate, completion: @escaping (String) -> Void, textFieldPlaceHolderTitle: String){
         //Creating UIAlertController and
         //Setting title and message for the alert dialog
         let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -52,9 +52,12 @@ class AlertDialog{
                 
                 let textField = alertController.textFields![0] as UITextField
             
-                let text = textField.text
+//                var text = textField.text
+//                let first = String((text?.prefix(1))!).capitalized
+//                let other = String((text?.dropFirst())!)
+                let text = StringService.formattedTextField(textField: textField.text!)
             
-                completion(text ?? "")
+                completion(text)
                 
             }else{
                 completion("")
@@ -65,6 +68,7 @@ class AlertDialog{
         let cancelAction = UIAlertAction(title: leftBtnTitle, style: .cancel) { (_) in }
         if textFieldPlaceHolderTitle != "" {
             alertController.addTextField(configurationHandler: { (textField) in
+                textField.delegate = textFieldDelegate
                 textField.placeholder = textFieldPlaceHolderTitle
             })
 
@@ -91,9 +95,10 @@ class AlertDialog{
             
             let textField = alertController.textFields![0] as UITextField
             
-            let text = textField.text
+            let text = StringService.formattedTextField(textField: textField.text!)
             
-            completion(text ?? "")
+            
+            completion(text)
             
             //}else{
             //completion("")
@@ -109,7 +114,11 @@ class AlertDialog{
 //
 //        }
         alertController.addTextField { (textField) in
+            
+            
+            
             completion2(textField, confirmAction, alertController)
+            
         }
         
         
@@ -123,32 +132,76 @@ class AlertDialog{
         controller.present(alertController, animated: true, completion: nil)
     }
     
-//    public static func showSortAlertMessage(title: String, btnTitle1: String, handler1: ((UIAlertAction) -> Void)?, btnTitle2: String, handler2: ((UIAlertAction)-> Void)?, btnTitle3: String, handler3: ((UIAlertAction)->Void)?, btnTitle4:((UIAlertAction)_>Void)?){
-//        let actionSheet = UIAlertController(title: title, message: nil , preferredStyle: .actionSheet)
-//
-//        actionSheet.addAction(UIAlertAction(title: "Sort by name", style: .default, handler: { (_) in
+    public static func showSortAlertMessage(title: String, btnTitle1: String, handler1: ((UIAlertAction) -> Void)?, btnTitle2: String, handler2: ((UIAlertAction)-> Void)?, btnTitle3: String, handler3: ((UIAlertAction)->Void)?, cancelBtnTitle:String, controller: UIViewController){
+        let actionSheet = UIAlertController(title: title, message: nil , preferredStyle: .actionSheet)
+
+        actionSheet.addAction(UIAlertAction(title: btnTitle1, style: .default, handler: handler1))
+        
+        actionSheet.addAction(UIAlertAction(title: btnTitle2, style: .default, handler: handler2 ))
+        actionSheet.addAction(UIAlertAction(title: btnTitle3, style: .default, handler: handler3 ))
+        
+        
+        actionSheet.addAction(UIAlertAction(title: cancelBtnTitle, style: .cancel , handler: {
+            (action: UIAlertAction) -> Void in
+            actionSheet.dismiss(animated: true, completion: nil)
+        }))
+        controller.present( actionSheet , animated:  true , completion:  nil)
+
+    }
+    
+    public static func textFieldObserver(textField: UITextField, alertController: UIAlertController, folderTypes: TypeList, confirmAction: UIAlertAction){
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
+            
+            let modifiedName = alertController.textFields?[0].text
+            
+            if !folderTypes.foundRepeatedType(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)!{
+                confirmAction.isEnabled = true
+            }else{
+                confirmAction.isEnabled = false
+            }
+            
+            
+        }
+    }
+    
+    
+    public static func textFieldObserver(textField: UITextField, alertController: UIAlertController, folders: Type, confirmAction: UIAlertAction){
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
+            
+            let modifiedName = alertController.textFields?[0].text
+            
+            if !folders.repeatedFolderFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)!{
+                confirmAction.isEnabled = true
+            }else{
+                confirmAction.isEnabled = false
+            }
+            
+            
+        }
+    }
+    
+    
+    
+//    public static func textFieldObserver(indexpaths: [IndexPath],textField: UITextField, alertController: UIAlertController, image: Image, confirmAction: UIAlertAction){
+//       
+//        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
 //            
-//            self.folderTypes.sortByName()
-//            self.collectionView.reloadData()
-//        }))
+//            let modifiedName = alertController.textFields?[0].text
+//            //if let indexpaths = indexpaths {
+//                for item  in indexpaths {
+//                    
+//                    let image = self.selectedFolder.getImageArray()[item.row]
+//                    if !self.selectedImage.repeatedHashTagFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
+//                        confirmAction.isEnabled = true
+//                    }else{
+//                        confirmAction.isEnabled = false
+//                    }
+//                }
+//            //}
 //        
-//        actionSheet.addAction(UIAlertAction(title: "Sort by created date", style: .default, handler: { (_) in
-//            self.folderTypes.sortByDateCreated()
-//            self.collectionView.reloadData()
-//        } ))
-//        actionSheet.addAction(UIAlertAction(title: "Sort by number of folders", style: .default, handler: {(_) in
-//            self.folderTypes.sortByNumOfFolder()
-//            self.collectionView.reloadData()
-//        } ))
-//        
-//        
-//        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel , handler: {
-//            (action: UIAlertAction) -> Void in
-//            actionSheet.dismiss(animated: true, completion: nil)
-//        }))
-//        present( actionSheet , animated:  true , completion:  nil)
-//
 //    }
+    
+  
     
     
 }

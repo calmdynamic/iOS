@@ -6,4 +6,5 @@ target 'PhotoManager' do
 
   # Pods for PhotoManager
 
+
 end
