@@ -8,6 +8,8 @@
 
 import Foundation
 import UIKit
+import CoreLocation
+import FirebaseAuth
 
 class CollectionViewService{
     public static func collectionViewChnageWhenSetEditing(collectionView:UICollectionView,editing: Bool){
@@ -36,7 +38,8 @@ class CollectionViewService{
         collectionView.delegate = collectionDelegate
     }
     
-    public static func initCollectionViewWhenWillAppear(tabBar: UITabBar, toolbar: UIToolbar, searchBar: UISearchBar, collectionView: UICollectionView){
+    public static func initCollectionViewWhenWillAppear(tabBar: UITabBar, toolbar: UIToolbar, searchBar: UISearchBar, collectionView: UICollectionView, tapGesture: UITapGestureRecognizer){
+        tapGesture.isEnabled = false
         TabBarService.initBarbarWhenWillAppear(tabBar: tabBar)
         
         ToolBarService.initToolBarWhenWillAppear(toolbar: toolbar)
@@ -45,6 +48,16 @@ class CollectionViewService{
 
         SearchBarService.setDefaultSortImage(searchBar: searchBar)
         collectionView.reloadData()
+        
+    }
+    
+    public static func initCollectionViewWhenWillAppear(tabBar: UITabBar, toolbar: UIToolbar, collectionView: UICollectionView){
+        
+        TabBarService.initBarbarWhenWillAppear(tabBar: tabBar)
+        
+        ToolBarService.initToolBarWhenWillAppear(toolbar: toolbar)
+        
+        CollectionViewService.deselectAll(collectionView: collectionView)
         
     }
     
@@ -119,7 +132,7 @@ class CollectionViewService{
         
     }
     
-    public static func deleteTypesToRealm(folders: Type, controller: UIViewController, collectionView: UICollectionView, addButton:UIBarButtonItem, updateButton: UIBarButtonItem, deleteButton: UIBarButtonItem, textFieldDelegate: UITextFieldDelegate){
+    public static func deleteFoldersFromRealm(folders: Type, controller: UIViewController, collectionView: UICollectionView, addButton:UIBarButtonItem, updateButton: UIBarButtonItem, deleteButton: UIBarButtonItem, textFieldDelegate: UITextFieldDelegate){
         
         AlertDialog.showAlertMessage(controller: controller, title: "Delete the folder(s)", message: "Ensure to delete the folder(s)?", leftBtnTitle: "Cancel",rightBtnTitle: "Delete", textFieldDelegate: textFieldDelegate, completion: { (_) in
             
@@ -141,6 +154,28 @@ class CollectionViewService{
             
         }, textFieldPlaceHolderTitle: "")
         
+        
+        
+    }
+    
+    public static func deleteImageFromRealm(selectedFolder: Folder, controller: UIViewController, collectionView: UICollectionView, hashTagBtn:UIBarButtonItem, uploadBtn: UIBarButtonItem, deleteButton: UIBarButtonItem, textFieldDelegate: UITextFieldDelegate){
+    
+        AlertDialog.showAlertMessage(controller: controller, title: "Delete the image(s)", message: "Ensure to delete the image(s)?", leftBtnTitle: "Cancel",rightBtnTitle: "Delete", textFieldDelegate: textFieldDelegate, completion: { (_) in
+            
+            let indexpaths = collectionView.indexPathsForSelectedItems
+            if let indexpaths = indexpaths {
+                for item  in indexpaths {
+                    collectionView.deselectItem(at: (item), animated: true)
+                    
+                }
+                
+                selectedFolder.deletImages(indexpaths: indexpaths)
+                
+                collectionView.deleteItems(at: indexpaths)
+                ToolBarService.initButtons(deleteButton: deleteButton, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn)
+            }
+            
+        }, textFieldPlaceHolderTitle: "")
         
         
     }
@@ -216,6 +251,176 @@ class CollectionViewService{
         
         
     }
+    
+    public static func addHashtagOperation(controller: UIViewController,collectionView: UICollectionView, selectedFolder: Folder, hashTagBtn:UIBarButtonItem, uploadBtn: UIBarButtonItem, deleteButton: UIBarButtonItem, textFieldDelegate: UITextFieldDelegate){
+        let indexpaths = collectionView.indexPathsForSelectedItems
+        let selectedImage = selectedFolder.getImageArray()[indexpaths![0].item]
+        
+        let currentHashTags = selectedImage.getHashTags()
+        
+        var hashtagsString = ""
+        for i in currentHashTags{
+            hashtagsString += "\(i.getHashTag()) "
+            
+        }
+        
+        let actionSheet = UIAlertController(title: "This image includes the following hashtags:\n \(hashtagsString)", message: nil, preferredStyle: .actionSheet)
+        
+        let updateHashtags = CollectionViewService.updateOneOrMoreHashtagToImage(hashtagsString: hashtagsString, selectedImage: selectedImage, controller: controller, collectionView: collectionView, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn, deleteButton: deleteButton)
+        
+        actionSheet.addAction(updateHashtags)
+        if selectedFolder.getNumOfImageSelection() != 1{
+            updateHashtags.isEnabled = false
+        }else{
+            updateHashtags.isEnabled = true
+        }
+        
+        let addHashtagToMultipleImage  = CollectionViewService.addOneOrMoreHashtagToImages(selectedFolder: selectedFolder, selectedImage: selectedImage, controller: controller, collectionView: collectionView, textFieldDelegate: textFieldDelegate, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn, deleteButton: deleteButton)
+        
+        actionSheet.addAction(addHashtagToMultipleImage)
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        
+        controller.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    private static func updateOneOrMoreHashtagToImage(hashtagsString: String, selectedImage: Image, controller: UIViewController, collectionView: UICollectionView,  hashTagBtn:UIBarButtonItem, uploadBtn: UIBarButtonItem, deleteButton: UIBarButtonItem) -> UIAlertAction{
+        
+        
+        return UIAlertAction(title: "Update hashtags", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            
+            
+            
+            AlertDialog.showTextViewDialog(origianlController: controller, title: "Update Hashtags?", message: "Ensure to update this image's hashtag(s)?", leftBtnTitle: "Cancel", rightBtnTitle: "Update", textViewText: hashtagsString , completion: { (textViewText) in
+                
+                let indexpaths = collectionView.indexPathsForSelectedItems
+                if indexpaths!.count == 1 {
+                    
+                    var tempHashTags = textViewText.components(separatedBy: " ")
+                    if(tempHashTags[tempHashTags.count-1]==""){
+                        tempHashTags.remove(at: tempHashTags.count-1)
+                    }
+                    
+                    let title = selectedImage.anyProblemForHashtag(tempHashTags: tempHashTags)
+                    
+                    if(title != ""){
+                        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+                        
+                        let cancelAction = UIAlertAction(title: "Ok", style: .default) { (_) in }
+                        alert.addAction(cancelAction)
+                        controller.present(alert, animated: true)
+                    }else{
+                        selectedImage.addOneOrMultipleHashtagToRealm(tempHashTags: tempHashTags)
+                        for item  in indexpaths! {
+                            collectionView.deselectItem(at: (item), animated: true)
+                            
+                        }
+                        ToolBarService.initButtons(deleteButton: deleteButton, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn)
+                    }
+                }
+                
+            })
+            
+            
+            
+            
+            
+        })
+        
+        
+    }
+    
+    
+    
+    
+    
+    private static func addOneOrMoreHashtagToImages(selectedFolder: Folder, selectedImage: Image, controller: UIViewController, collectionView: UICollectionView, textFieldDelegate: UITextFieldDelegate, hashTagBtn:UIBarButtonItem, uploadBtn: UIBarButtonItem, deleteButton: UIBarButtonItem) -> UIAlertAction{
+        return UIAlertAction(title: "Add a HashTag to one or multiple Image(s)", style: .default, handler: {
+            (alert: UIAlertAction!) -> Void in
+            
+            AlertDialog.showAlertMessage(controller: controller, title: "Add name?", message: "Enter the hashtag name", leftBtnTitle: "Cancel", rightBtnTitle: "Add", completion: { (newHashtagName) in
+                let indexpaths = collectionView.indexPathsForSelectedItems
+                if let indexpaths = indexpaths {
+                    for item  in indexpaths {
+                        collectionView.deselectItem(at: (item), animated: true)
+                        
+                    }
+                    selectedFolder.addOneOrMultipleHashtagToImages(indexpaths: indexpaths, newHashtagName: newHashtagName)
+                    ToolBarService.initButtons(deleteButton: deleteButton, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn)
+                }
+                
+            }, completion2: { (textField, confirmAction, alertController) in
+                let indexpaths = collectionView.indexPathsForSelectedItems
+                for _ in indexpaths!{
+                    
+                    confirmAction.isEnabled = false
+                    
+                    textField.placeholder = "Enter a New Hashtag name"
+                    textField.delegate = textFieldDelegate
+                    AlertDialog.textFieldObserver(indexpaths: indexpaths!,textField: textField, alertController: alertController, selectedFolder: selectedFolder, image: selectedImage, confirmAction: confirmAction)
+                    
+                }
+                
+            })
+            
+            
+        })
+    }
+    
+    public static func addImageToRealmWhenOnDeviceWithNetworking(locationMgr: CLLocationManager, locations: [CLLocation], selectedFolder: Folder, collectionView: UICollectionView){
+        LocationService.getLocationDate(locationMgr: locationMgr, locations: locations, selectedFolder: selectedFolder) { (location) in
+            
+            if !selectedFolder.getDidAddAlready(){
+                for _ in 1...100{
+                selectedFolder.addImageToRealm(newImage: selectedFolder.getNewImage(), location: location)
+                }
+                //DispatchQueue.main.async {
+                
+                collectionView.reloadData()
+                // }
+                selectedFolder.setDidAddAlready(didAddAlready: true)
+                
+            }
+        }
+    }
+    
+    public static func addPhotoWhenClickingCameraBtn(selectedFolder: Folder, controller: UIViewController, collectionView: UICollectionView, pickerController: UIImagePickerController){
+        //if in simulator
+        if !UIImagePickerController.isSourceTypeAvailable(.camera){
+            
+            AlertDialog.showAlertMessage(controller: controller, title: "Message", message:"Device has no camera" , btnTitle: "Ok")
+            for _ in 1...100{
+            selectedFolder.addImageForTestingToRealm()
+            }
+            collectionView.reloadData()
+        }//if in real device
+        else{
+            pickerController.sourceType = UIImagePickerControllerSourceType.camera
+            controller.present(pickerController, animated: true, completion: nil)
+            selectedFolder.setDidAddAlready(didAddAlready: false)
+            
+        }
+    }
+    
+    public static func uploadingImagesToRealm(controller: UIViewController, collectionView: UICollectionView, uploadingAlertView: UploadingAlertView, selectedFolder: Folder, deleteButton: UIBarButtonItem, hashTagBtn: UIBarButtonItem, uploadBtn: UIBarButtonItem){
+        if Reachability.isConnectedToNetwork(){
+            if Auth.auth().currentUser != nil{
+                AlertDialog.showAlertMessage(controller: controller, title: "Upload Message", message: "Ensure to upload this image?", leftBtnTitle: "Cancel", rightBtnTitle: "Upload", handler: { (_) in
+                    uploadingAlertView.initailizedView(controller: controller)
+                    uploadingAlertView.uploadingOperation(collectionView: collectionView, selectedFolder: selectedFolder, deletedButton: deleteButton, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn)
+                })
+                
+            }else{
+                AlertDialog.showAlertMessage(controller: controller, title: "Message", message: "You have not signed in the firebase account; You cannot upload images", btnTitle: "Ok")
+                
+            }
+        }else{
+            AlertDialog.showAlertMessage(controller: controller, title: "No Networking Message", message: "No Networking Detection", btnTitle: "Ok")
+        }
+    }
+    
+    
     
     
 

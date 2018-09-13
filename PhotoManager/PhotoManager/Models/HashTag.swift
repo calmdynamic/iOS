@@ -33,6 +33,23 @@ class HashTag: Object{
         return self.hashTag
     }
     
+    public func isHashtagEmpty() -> Bool{
+        if (self.hashTag == "#".trimmingCharacters(in: .whitespaces)){
+            //title = "No empty hashtags"
+            return true
+        }
+        return false
+    }
+    
+    public func isHashtagContainHashSymbol() -> Bool{
+        let firstletter = self.hashTag.prefix(1)
+        if (!firstletter.contains("#")){
+            //title = "One or more of your hashtag is missing # that is or are separated by a space"
+             return true
+        }
+        return false
+    }
+    
  
 }
 

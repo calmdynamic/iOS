@@ -22,6 +22,9 @@ class AlertDialog{
         controller.present(alertController, animated: true, completion: nil)
     }
     
+    /**
+     a basic Alert Dialog function with handler
+     */
     public static func showAlertMessage(controller: UIViewController,title: String, message: String, leftBtnTitle: String, rightBtnTitle: String, handler: ((UIAlertAction)->Void)?){
         //Creating UIAlertController and
         //Setting title and message for the alert dialog
@@ -36,6 +39,24 @@ class AlertDialog{
         //adding the action to dialogbox
         alertController.addAction(confirmAction)
         alertController.addAction(cancelAction)
+        
+        //finally presenting the dialog box
+        controller.present(alertController, animated: true, completion: nil)
+    }
+    
+    /**
+     a basic Alert Dialog function with handler
+     */
+    public static func showAlertMessage(controller: UIViewController,title: String, message: String, btnTitle: String, handler: ((UIAlertAction)->Void)?){
+        //Creating UIAlertController and
+        //Setting title and message for the alert dialog
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        //the confirm action taking the inputs
+        let confirmAction = UIAlertAction(title: btnTitle, style: .default, handler: handler)
+
+        //adding the action to dialogbox
+        alertController.addAction(confirmAction)
         
         //finally presenting the dialog box
         controller.present(alertController, animated: true, completion: nil)
@@ -149,6 +170,55 @@ class AlertDialog{
 
     }
     
+    public static func showSharingAlertMessage(title: String, btnTitle1: String, handler1: ((UIAlertAction) -> Void)?, btnTitle2: String, handler2: ((UIAlertAction)-> Void)?, cancelBtnTitle:String, controller: UIViewController){
+        let actionSheet = UIAlertController(title: title, message: nil , preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: btnTitle1, style: .default, handler: handler1))
+        
+        actionSheet.addAction(UIAlertAction(title: btnTitle2, style: .default, handler: handler2 ))
+
+        actionSheet.addAction(UIAlertAction(title: cancelBtnTitle, style: .cancel , handler: {
+            (action: UIAlertAction) -> Void in
+            actionSheet.dismiss(animated: true, completion: nil)
+        }))
+        controller.present( actionSheet , animated:  true , completion:  nil)
+        
+    }
+    
+
+    public static func showTextViewDialog(origianlController: UIViewController,title: String, message: String, leftBtnTitle: String, rightBtnTitle: String, textViewText: String, completion: @escaping (String) -> Void){
+        let textView = UITextView()
+        textView.keyboardType = UIKeyboardType.twitter
+        
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        
+        //the confirm action taking the inputs
+        let confirmAction = UIAlertAction(title: rightBtnTitle, style: .destructive) { (_) in
+            completion(textView.text)
+        }
+        
+        //the cancel action doing nothing
+        let cancelAction = UIAlertAction(title: leftBtnTitle, style: .cancel) { (_) in }
+        
+        //adding the action to dialogbox
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        
+        textView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        
+        let controller = UIViewController()
+        
+        textView.frame = controller.view.frame
+        controller.view.addSubview(textView)
+        textView.text = textViewText
+        alertController.setValue(controller, forKey: "contentViewController")
+        
+        //finally presenting the dialog box
+        origianlController.present(alertController, animated: true, completion: nil)
+        
+        
+    }
+    
     public static func textFieldObserver(textField: UITextField, alertController: UIAlertController, folderTypes: TypeList, confirmAction: UIAlertAction){
         NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
             
@@ -182,26 +252,26 @@ class AlertDialog{
     
     
     
-//    public static func textFieldObserver(indexpaths: [IndexPath],textField: UITextField, alertController: UIAlertController, image: Image, confirmAction: UIAlertAction){
-//       
-//        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
-//            
-//            let modifiedName = alertController.textFields?[0].text
-//            //if let indexpaths = indexpaths {
-//                for item  in indexpaths {
-//                    
-//                    let image = self.selectedFolder.getImageArray()[item.row]
-//                    if !self.selectedImage.repeatedHashTagFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
-//                        confirmAction.isEnabled = true
-//                    }else{
-//                        confirmAction.isEnabled = false
-//                    }
-//                }
-//            //}
-//        
-//    }
+    public static func textFieldObserver(indexpaths: [IndexPath],textField: UITextField, alertController: UIAlertController, selectedFolder: Folder, image: Image, confirmAction: UIAlertAction){
+       
+        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
+            
+            let modifiedName = alertController.textFields?[0].text
+            //if let indexpaths = indexpaths {
+                for item  in indexpaths {
+                    
+                    let image = selectedFolder.getImageArray()[item.row]
+                    if !image.repeatedHashTagFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
+                        confirmAction.isEnabled = true
+                    }else{
+                        confirmAction.isEnabled = false
+                    }
+                }
+            //}
+        
+    }
     
   
-    
+}
     
 }

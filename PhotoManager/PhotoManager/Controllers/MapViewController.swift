@@ -12,7 +12,7 @@ import RealmSwift
 class MapViewController: UIViewController {
 
     @IBOutlet weak var mapView: MKMapView!
-    var images: Results<Image>!
+    //var images: Results<Image>!
     var locations: Results<Location>!
     override func viewWillAppear(_ animated: Bool) {
         

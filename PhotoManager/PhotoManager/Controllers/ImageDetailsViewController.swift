@@ -9,127 +9,99 @@
 import UIKit
 import MapKit
 
-class ImageDetailsViewController: UIViewController, UIScrollViewDelegate {
+class ImageDetailsViewController: UIViewController {
     
-    @IBOutlet weak var selectedImage: UIImageView!
-    @IBOutlet weak var scrollView: UIScrollView!
-    var image: Image!
+
+    @IBOutlet weak var mainView: UIView!
+    fileprivate var pageViewController:UIPageViewController!
+    var dataSource = ImagePageViewViewController()
+var currentIndex = 0
+    
+    var imageArray: [Image]!
+    var currentImage: Image!
+    var infoPropertyView = InformationPropertyView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 6.0
         
-        navigationItem.title = self.image.getImageID()
-       
-        let image = UIImage(data: (self.image.getImageBinaryData()) as Data, scale:1.0)
-        
-        selectedImage.image = image
+        currentIndex = self.currentImage.getImageIndexFromArray(imageArray: imageArray)
+        navigationItem.title = "Image #\(currentIndex+1)"
+        self.setupDataSource(imageArray: imageArray)
+        createPageViewController()
 
     }
     @IBAction func propertyView(_ sender: UIBarButtonItem) {
-        
-        let alertController = UIAlertController(title: "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", message: nil, preferredStyle: UIAlertControllerStyle.actionSheet)
-        
-        let margin:CGFloat = 10.0
-        let rect = CGRect(x: margin, y: margin, width: alertController.view.bounds.size.width - margin * 4.0, height: 360)
-        let customView = UIView(frame: rect)
-        
-        
-         let rectForTitle = CGRect(x: margin, y: margin, width: alertController.view.bounds.size.width - margin * 4.0, height: 20)
-        
-        let titleLabel = UILabel(frame: rectForTitle)
-        
-        
-        titleLabel.text = "Information Property"
-        titleLabel.textAlignment = .center
-        
-        customView.addSubview(titleLabel)
-        
-        let rectForMapKit = CGRect(x: margin, y: margin + 30, width: alertController.view.bounds.size.width - margin * 6.0, height: 220)
-        
-        let mapView = MKMapView(frame: rectForMapKit)
-        let regionRadius: CLLocationDistance = 1000
 
-        let initialLocation = CLLocation(latitude: image.getLocation().getLatitude(), longitude: image.getLocation().getLongtitude())
+        self.infoPropertyView = self.storyboard?.instantiateViewController(withIdentifier: InformationPropertyView.IDENTIFIER) as! InformationPropertyView
+        self.infoPropertyView.initailizedView(controller: self)
         
-        
-        let coordinateRegion = MKCoordinateRegionMakeWithDistance(initialLocation.coordinate,
-                                                                  regionRadius, regionRadius)
-        mapView.setRegion(coordinateRegion, animated: true)
-        
-        
-        let annotation = MKPointAnnotation()  // <-- new instance here
-        annotation.coordinate = initialLocation.coordinate
-        annotation.title = "Spot"
-        mapView.addAnnotation(annotation)
-        
-        
-        let customMapView = mapView
-
-        customView.addSubview(customMapView)
-       
-         let rectAddressLabel = CGRect(x: margin, y: 265, width: alertController.view.bounds.size.width - margin * 6.0, height: 15)
-        let addressLabel = UILabel(frame: rectAddressLabel)
-        
-        
-        
-        
-        addressLabel.text = self.image.getLocation().getStreet() != "" ? self.image.getLocation().getStreet() + " " + self.image.getLocation().getCity() + " " + self.image.getLocation().getProvince() : "Address is unavailable"
-        
-        
-        addressLabel.textAlignment = NSTextAlignment.center
-        customView.addSubview(addressLabel)
-        
-        let rectLabel = CGRect(x: margin, y: 285, width: alertController.view.bounds.size.width - margin * 6.0, height: 15)
-        let createdDateLabel = UILabel(frame: rectLabel)
-        
-        createdDateLabel.textAlignment = NSTextAlignment.center
-        let dateFormatter1 = DateFormatter()
-        dateFormatter1.dateFormat = "yyyy MMM dd";
-        let mydt = dateFormatter1.string(from: self.image.getDateCreated())
-        
-        
-        createdDateLabel.text = "Date Created: " + mydt
-        customView.addSubview(createdDateLabel)
-        
-         let rectTagLabel = CGRect(x: margin, y: 300, width: alertController.view.bounds.size.width - margin * 6.0, height: 50)
-        
-        
+        self.infoPropertyView.initalizeImageInfoData(image: imageArray[currentIndex], imageTitle: "Image #\(currentIndex+1)")
+    }
     
-        let tagsLabel = UITextView(frame: rectTagLabel)
-        var hashTagsString = ""
+    
+    @IBAction func shareImageButton(_ sender: Any) {
+        AlertDialog.showSharingAlertMessage(title: "Sharing this image", btnTitle1: "Sharing your image with friends", handler1: { (_) in
+            
+            
+            
+        }, btnTitle2: "Uploading this image", handler2: { (_) in
+            
+        }, cancelBtnTitle: "Cancel", controller: self)
+    }
+    
+    fileprivate func setupDataSource(imageArray: [Image]) {
+        dataSource.setupImageArray(imageArray: imageArray)
+    }
+    
+    func createPageViewController(){
+        if imageArray.count > 0{
+
         
-        for i in self.image.getHashTags(){
-            hashTagsString += i.getHashTag() + " "
+        if let startingViewController = dataSource.getItemController(currentIndex) {
+            
+            pageViewController = UIPageViewController(transitionStyle: .scroll,
+                                                      navigationOrientation: .horizontal,
+                                                      options: [UIPageViewControllerOptionInterPageSpacingKey : 20])
+            
+            if let pageViewController = pageViewController {
+                pageViewController.dataSource = dataSource
+                pageViewController.delegate = self
+                pageViewController.setViewControllers([startingViewController],
+                                                      direction: .forward,
+                                                      animated: false,
+                                                      completion: {done in})
+                pageViewController.view.frame = self.view.frame
+                addChildViewController(pageViewController)
+                self.view.addSubview(pageViewController.view)
+            }
+        }
         }
         
-        
-        tagsLabel.text = "Hashtags: " + hashTagsString
-        
-        tagsLabel.isEditable = false
-        tagsLabel.isScrollEnabled = true
-       
-        
-        
-         customView.addSubview(tagsLabel)
-        alertController.view.addSubview(customView)
-        
-        
-        let cancelAction = UIAlertAction(title: "Close", style: .cancel, handler: {(alert: UIAlertAction!) in print("cancel")})
-        
-        alertController.addAction(cancelAction)
-        
-        DispatchQueue.main.async {
-            self.present(alertController, animated: true, completion:{})
-        }
-    
-}
-
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        
-        return self.selectedImage
     }
 
+    func presentationCount(for pageViewController: UIPageViewController) -> Int {
+        return imageArray.count
+    }
+    
+    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
+        return self.currentIndex
+    }
+    
+    
+}
+//MARK:-UIPageViewControllerDelegate
+extension ImageDetailsViewController: UIPageViewControllerDelegate {
+    
+    func pageViewController(_ pageViewController: UIPageViewController,
+                            didFinishAnimating finished: Bool,
+                            previousViewControllers: [UIViewController],
+                            transitionCompleted completed: Bool) {
+        
+        if let vc = pageViewController.viewControllers?.first as? ItemViewController {
+            print(vc.itemIndex)
+            self.navigationItem.title = "Image #\(vc.itemIndex+1)"
+            self.currentIndex = vc.itemIndex
+        }
+        
+    }
 }

@@ -14,6 +14,9 @@ class TransitionToOtherViewService{
     static let SEGUE_IDENTIFIER_FOR_TYPE_TO_IMAGE = "typeImageSegue"
     static let DEFAULT_FOLDER_TYPE_NAME = "Default"
     static let SEGUE_IDENTIFIER_FOR_FOLDER_TO_IMAGE = "folderImageSegue"
+    static let SEGUE_IDENTIFIER_FOR_IMAGE_TO_IMAGE_DETAIL = "imageDetailSegue"
+    static let SEGUE_IDENTIFIER_FOR_IMAGE_TO_DOWNLOAD = "downloadSegue"
+    
     
     public static func folderTypeViewTransition(folderTypes: TypeList, segue: UIStoryboardSegue, collectionView: UICollectionView){
         
@@ -37,7 +40,7 @@ class TransitionToOtherViewService{
                 selectedFolderType = folderTypes.getOneFolderTypeByIndedx(index: indexpaths![0].item)
                 let selectedFolder = selectedFolderType.getFolders()[0]
                 
-                imageVC.selectedFolderType = selectedFolderType
+                //imageVC.selectedFolderType = selectedFolderType
                 imageVC.selectedFolder = selectedFolder
                 
             }
@@ -51,8 +54,29 @@ class TransitionToOtherViewService{
             
             let selectedFolder = folderType.getFolderArray()[indexpaths![0].item]
             
-            imageVC.selectedFolderType = folderType
+            //imageVC.selectedFolderType = folderType
             imageVC.selectedFolder = selectedFolder
+            
+        }
+    }
+    
+    public static func imageViewTransition(selectedFolder: Folder,segue: UIStoryboardSegue, collectionView: UICollectionView){
+        if segue.identifier == SEGUE_IDENTIFIER_FOR_IMAGE_TO_IMAGE_DETAIL{
+            let imageDetailVC = segue.destination as! ImageDetailsViewController
+            let indexpaths = collectionView.indexPathsForSelectedItems
+            
+            //self.selectedFolder.getImageArray()[indexPath.item].loadImageFromPath()
+            imageDetailVC.currentImage = selectedFolder.getImageArray()[indexpaths![0].item]
+            imageDetailVC.imageArray = selectedFolder.getImageArray()
+            
+        }
+        
+        if segue.identifier == SEGUE_IDENTIFIER_FOR_IMAGE_TO_DOWNLOAD{
+            let downloadVC = segue.destination as! DownloadListViewController
+            //let indexpaths = self.collectionView?.indexPathsForSelectedItems
+            downloadVC.selectedFolderTypeName = selectedFolder.getCategoryName()
+            downloadVC.selectedFolder = selectedFolder
+            //downloadVC.location = self.location
             
         }
     }

@@ -9,10 +9,12 @@
 
 import UIKit
 class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFieldDelegate {
+    
     static let NUM_OF_LIMIT_WORD_CHARACTER = 9
     var searchBar : UISearchBar = UISearchBar()
     var folderTypes: TypeList!
     
+    @IBOutlet var tapGesture: UITapGestureRecognizer!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var toolbar: UIToolbar!
     @IBOutlet weak var updateButton: UIBarButtonItem!
@@ -21,11 +23,12 @@ class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFie
     
     //a function will be performed after viewDidLoad()
     override func viewWillAppear(_ animated: Bool) {
+        isEditing = false
         folderTypes = TypeList()
         folderTypes.getFolderTypeDataFromRealm()
         folderTypes.setDefaultSort()
         SearchBarService.sortFolderTypeWhenClickingOrNil(searchBar: searchBar, folderTypes: folderTypes)
-        CollectionViewService.initCollectionViewWhenWillAppear(tabBar: (self.tabBarController?.tabBar)!, toolbar: toolbar, searchBar: searchBar, collectionView: collectionView)
+        CollectionViewService.initCollectionViewWhenWillAppear(tabBar: (self.tabBarController?.tabBar)!, toolbar: toolbar, searchBar: searchBar, collectionView: collectionView, tapGesture: self.tapGesture)
         
     }
     
@@ -33,7 +36,6 @@ class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFie
     //a function will be performed when it is first launched
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         NavigationService.initNavigationItem(title: "Types", navigationItem: navigationItem, editButtonItem: editButtonItem)
         
         SearchBarService.setSearchBarProperty(searchBar: self.searchBar, searchBarDelegate: self, placeholder: "Search Folder Types")
@@ -62,7 +64,7 @@ class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFie
         
         SearchBarService.searchBarChangeWhenSetEditng(searchBar: self.searchBar, editing: editing)
         TabBarService.tabBarChangeWhenSetEditing(tabBarController: self.tabBarController!, editing: editing)
-        ToolBarService.toolbarItemChangeWhenSetEditing(toolbar: self.toolbar, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton, editing: editing)
+        ToolBarService.toolbarItemChangeWhenSetEditing(toolbar: self.toolbar, addButton: self.addButton, updateButton: self.updateButton, deleteButton: self.deleteButton,navigationItem: navigationItem, editing: editing)
         CollectionViewService.collectionViewChnageWhenSetEditing(collectionView: self.collectionView, editing: editing)
     }
     
@@ -92,6 +94,11 @@ class FolderTypeViewController: UIViewController, UISearchBarDelegate, UITextFie
         let newLength = text.count + string.count - range.length
         return newLength <= FolderTypeViewController.NUM_OF_LIMIT_WORD_CHARACTER
     }
+
+    // //a function to be performed when user tap the screen and the search bar is clicked
+    @IBAction func tap(_ sender: UITapGestureRecognizer) {
+        self.searchBar.endEditing(true)
+    }
     
 }
 
@@ -118,6 +125,7 @@ extension FolderTypeViewController: UICollectionViewDataSource{
         }
         
         cell.cellImageWhenSettingPropertyAndScrollingRecreating(isEditing: isEditing)
+        
         
         return cell
     }
@@ -160,14 +168,12 @@ extension FolderTypeViewController: UICollectionViewDelegate{
     
     //a function to change all button status when starting editing on search bar
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        //editButtonItem.isEnabled = false
-        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, isBeginEditing: true)
+        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, tapGesture: self.tapGesture, isBeginEditing: true)
     }
     
     //a function to change all button status when finishing editing on search bar
     func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        //editButtonItem.isEnabled = true
-        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, isBeginEditing: false)
+        SearchBarService.searchBarButtonChangeWhenIsEditing(viewController: self, collectionView: self.collectionView, searchBar: self.searchBar, tapGesture: self.tapGesture, isBeginEditing: false)
     }
     
     //a function will be performed when you click enter on search bar
@@ -182,19 +188,13 @@ extension FolderTypeViewController: UICollectionViewDelegate{
     
     //a function will be performed when you scroll the view.
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+       // self.collectionView.isUserInteractionEnabled = true
         searchBar.endEditing(true)
     }
-    
-    
     
     //a function will be performed when you click sort button
     func searchBarBookmarkButtonClicked(_ searchBar: UISearchBar) {
         SearchBarService.sortByAType(folderTypes: self.folderTypes, controller: self, collectionView: self.collectionView, searchBar: self.searchBar)
         
     }
-    
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        print("tttttt")
-//    }
-    
 }

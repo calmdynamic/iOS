@@ -39,6 +39,30 @@ class TypeList{
         self.folderTypes.append(newType)
     }
     
+    
+    func createTypeData(){
+        self.addFolderTypeToRealm(typename: "Default")
+        self.addFolderTypeToRealm(typename: "Mountains")
+        self.addFolderTypeToRealm(typename: "Sports")
+        self.addFolderTypeToRealm(typename: "Home")
+        self.addFolderTypeToRealm(typename: "School")
+        self.addFolderTypeToRealm(typename: "Movie")
+        self.addFolderTypeToRealm(typename: "Math")
+        self.addFolderTypeToRealm(typename: "Biology")
+        self.addFolderTypeToRealm(typename: "Chemistry")
+        self.addFolderTypeToRealm(typename: "Physics")
+        self.addFolderTypeToRealm(typename: "Fruit")
+        self.addFolderTypeToRealm(typename: "Plant")
+        self.addFolderTypeToRealm(typename: "Planet")
+        self.addFolderTypeToRealm(typename: "Game")
+        self.addFolderTypeToRealm(typename: "Languages")
+        self.addFolderTypeToRealm(typename: "Algorithm")
+        self.addFolderTypeToRealm(typename: "Food")
+        self.addFolderTypeToRealm(typename: "Philosophy")
+        self.addFolderTypeToRealm(typename: "History")
+        self.addFolderTypeToRealm(typename: "Travel")
+    }
+    
     func deleteFolderTypeFromRealm(indexpaths: [IndexPath]){
         
         var deletedFolderTypes:[Type] = []

@@ -76,6 +76,31 @@ class Type: Object{
         //self.folderTypes.append(newType)
     }
     
+    public func createDefaultFolder(){
+         self.addFoldersToRealm(folderName: "Default")
+    }
+    
+    public func createMountainFolders(){
+        self.addFoldersToRealm(folderName: "Grouse")
+        self.addFoldersToRealm(folderName: "Rocky")
+    }
+    
+    public func createFruitFolders(){
+        self.addFoldersToRealm(folderName: "Cherries")
+        self.addFoldersToRealm(folderName: "Hard")
+        self.addFoldersToRealm(folderName: "Soft")
+        self.addFoldersToRealm(folderName: "Apples")
+        self.addFoldersToRealm(folderName: "Lemons")
+        self.addFoldersToRealm(folderName: "Limes")
+        self.addFoldersToRealm(folderName: "Mandarines")
+        self.addFoldersToRealm(folderName: "Peaches")
+    }
+    
+    public func createSportFolders(){
+        self.addFoldersToRealm(folderName: "Olympics")
+        //self.folders[0].createOlympicData()
+    }
+    
    
     public func addFolderToList(folder: Folder){
         self.folders.append(folder)

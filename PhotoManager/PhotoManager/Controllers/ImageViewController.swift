@@ -3,704 +3,296 @@
 //  FinalProject
 //
 //  Created by Jason Chih-Yuan on 2018-03-13.
+//  Updated by Jason Chih-Yuan on 2018-09-09.
 //  Copyright © 2018 Jason Lai. All rights reserved.
 //
 
 import UIKit
-import RealmSwift
 import CoreLocation
-import FirebaseDatabase
-import FirebaseStorage
-import FirebaseAuth
+import PinterestLayout
+import SDWebImage
 
-protocol PositionControllerDelegate: class {
-    func didUpdatePosition(_ newPosition: Location)
-}
-
-class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate, CLLocationManagerDelegate {
-
-    weak var delegate: PositionControllerDelegate?
+class ImageViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate, CLLocationManagerDelegate, UITextFieldDelegate {
     
+    static let NUM_OF_LIMIT_WORD_CHARACTER = 15
+    var i:Int = 0
+    var uploadingAlertView = UploadingAlertView()
     let locationMgr = CLLocationManager()
-    var location: Location!
-    var selectedFolderType: Type!
-    var newImage: UIImage!
-    var edit:Bool!
-    //var selectedImage: Image!
-    var numOfSelection: Int!
-    
-    var numOfSuccess: Double!
+    let pickerController = UIImagePickerController()
     
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var toolbar: UIToolbar!
-    
     @IBOutlet weak var cameraBtn: UIButton!
-    
     @IBOutlet weak var hashTagBtn: UIBarButtonItem!
-    
     @IBOutlet weak var deleteButton: UIBarButtonItem!
-    
     @IBOutlet weak var uploadBtn: UIBarButtonItem!
-    
-    
     @IBOutlet weak var downloadBtn: UIButton!
-    
-    
-    //var images: [Image]!
-    
-    let pickerController = UIImagePickerController()
-    
+
     var selectedFolder: Folder!
-    let segueIdentfier = "imageDetailSegue"
-    let segueIdentfier2 = "downloadSegue"
-    let identifier = "imageCell"
     
     
-//    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        print("dfsfdsfdsfsds")
-//    }
     
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+
+    //MARK: private
+    
+    private func setupCollectionViewInsets() {
+        collectionView!.backgroundColor = .clear
+        collectionView!.contentInset = UIEdgeInsets(
+            top: 15,
+            left: 5,
+            bottom: 49,
+            right: 5
+        )
+    }
+    
+    private func setupLayout() {
+        let layout: PinterestLayout = {
+            if let layout = collectionView.collectionViewLayout as? PinterestLayout {
+                return layout
+            }
+            let layout = PinterestLayout()
+            
+            collectionView?.collectionViewLayout = layout
+            
+            return layout
+        }()
+        layout.delegate = self as PinterestLayoutDelegate
+        layout.cellPadding = 5
+        layout.numberOfColumns = 3
+    }
+    
+    
+    
+    
+    //a function will be performed after viewDidLoad()
     override func viewWillAppear(_ animated: Bool) {
         isEditing = false
-        
-        locationMgr.stopUpdatingLocation()
-        
-        
-        toolbar.isHidden = true
-        
-
-        let tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", selectedFolderType.getName() )
-        
-        
-        let tempFolders = tempFolderType[0].getFolders().filter("name = %@", selectedFolder.getName() )
-        
-         //self.folderType.setFolderArray(folders: Array(self.folderType.getFolders()))
-
         self.selectedFolder.setImageArray(imageArray: Array(self.selectedFolder.getImages()))
-//        self.images = [Image]()
-//        for i in tempFolders[0].getImages(){
-//            images.append(i)
-//        }
+        CollectionViewService.initCollectionViewWhenWillAppear(tabBar: (self.tabBarController?.tabBar)!, toolbar: toolbar, collectionView: collectionView)
     }
 
+    //a function will be performed when it is first launched
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        setupCollectionViewInsets()
+        setupLayout()
         
         
-        collectionView.dataSource = self
-        collectionView.delegate = self
-        locationMgr.delegate = self
-        self.location = Location()
-        
-        UtilityService.shared.locationChecker(locationMgr: locationMgr, viewController: self)
-        
-        navigationItem.title = selectedFolder.getName()
-        navigationItem.rightBarButtonItem = editButtonItem
-        self.edit = false
-        pickerController.delegate = self
-        
-        
+        NavigationService.initNavigationItem(title: selectedFolder.getName(), navigationItem: navigationItem, editButtonItem: editButtonItem)
+        CameraService.initCameraPicker(controller: self, pickerController: pickerController)
+        LocationService.initLocationMgr(controller: self, locationMgr: locationMgr)
+        CollectionViewService.initCollectionView(collectionView: self.collectionView, collectionDataSource: self, collectionDelegate: self)
     }
     
+    //a function to be performed when a user click an image or download button
     override func prepare(for segue: UIStoryboardSegue, sender: Any?)  {
-        
-        if segue.identifier == segueIdentfier{
-            let imageDetailVC = segue.destination as! ImageDetailsViewController
-            let indexpaths = self.collectionView?.indexPathsForSelectedItems
-
-            //self.selectedImage = self.selectedFolder.getImageArray()[indexpaths![0].item]
-
-            imageDetailVC.image = self.selectedFolder.getImageArray()[indexpaths![0].item]
-
-        }
-
-        if segue.identifier == segueIdentfier2{
-            let downloadVC = segue.destination as! DownloadListViewController
-            //let indexpaths = self.collectionView?.indexPathsForSelectedItems
-            downloadVC.selectedFolderType = self.selectedFolderType
-            downloadVC.selectedFolder = self.selectedFolder
-            downloadVC.location = self.location
-            
-        }
-        
-
+        TransitionToOtherViewService.imageViewTransition(selectedFolder: self.selectedFolder, segue: segue, collectionView: self.collectionView)
     }
     
-    
+    //a function to check if it can go to the next folder and to be performed before prepare()
     override func shouldPerformSegue(withIdentifier: String, sender: Any?) -> Bool {
         return !isEditing
     }
     
-
+    //a function to be performed when a user clicks edit button
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
-        if editing{
-            self.tabBarController?.tabBar.isHidden = true
-            self.navigationItem.hidesBackButton = true
-            self.edit = true
-            self.cameraBtn.isEnabled = false
-            self.downloadBtn.isEnabled = false
-            
-        }else{
-            self.edit = false
-            self.tabBarController?.tabBar.isHidden = false
-            self.navigationItem.hidesBackButton = false
-            self.cameraBtn.isEnabled = true
-            self.downloadBtn.isEnabled = true
-            
-        }
-        collectionView?.allowsMultipleSelection = editing
-        toolbar.isHidden = !editing
-        
-        deleteButton.isEnabled = false
-        hashTagBtn.isEnabled = false
-        uploadBtn.isEnabled = false
-        collectionView.reloadData()
+        TabBarService.tabBarChangeWhenSetEditing(tabBarController: self.tabBarController!, editing: editing)
+        ToolBarService.toolbarItemChangeWhenSetEditing(toolbar: toolbar, uploadBtn: uploadBtn, hashTagBtn: hashTagBtn, deleteButton: deleteButton, downloadBtn: downloadBtn, cameraBtn: cameraBtn, navigationItem: navigationItem, editing: editing)
+        CollectionViewService.collectionViewChnageWhenSetEditing(collectionView: self.collectionView, editing: editing)
     }
     
-    
+    //a function to be called when the user clicks the camera button
     @IBAction func addPhoto(_ sender: UIButton) {
-       
-
-        if Reachability.isConnectedToNetwork(){
-        self.locationMgr.requestWhenInUseAuthorization()
-        self.locationMgr.startUpdatingLocation()
-        }
-        
-        //if no camera ability; or in simulator
-        if !CameraService.cameraChecker(pickerController: pickerController, viewController: self){
-            
-            self.selectedFolder.addImageForTestingToRealm()
-            self.collectionView?.reloadData()
-            
-            if Reachability.isConnectedToNetwork(){
-                locationMgr.stopUpdatingLocation()
-            }
-            
-        }
-
+        CollectionViewService.addPhotoWhenClickingCameraBtn(selectedFolder: selectedFolder, controller: self, collectionView: self.collectionView, pickerController: pickerController)
     }
     
-    
+    //a function to be called when it recieved locationMgr.startUpdating()
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-
-        
-        UtilityService.shared.getLocationDetailedInfo(locationMgr: self.locationMgr, location: self.location)
-
+        CollectionViewService.addImageToRealmWhenOnDeviceWithNetworking(locationMgr: locationMgr, locations: locations, selectedFolder: selectedFolder, collectionView: collectionView)
     }
     
-    
+    //a function to be called when the user clicks the done button on camera screen
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        CameraService.takePhotoIfWifiTakePhotoAndSavePhotoToRealmIfNoWifi(selectedFolder: self.selectedFolder, locationMgr: self.locationMgr, picker: picker, didFinishPickingMediaWithInfo: info, collectionView: self.collectionView)
         
-        picker.dismiss(animated: true, completion: nil)
-        newImage = info[UIImagePickerControllerOriginalImage] as? UIImage
-        let realmImage = UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.newImage, location: self.location)
-        
-        self.selectedFolder.addElementToImageArray(image: realmImage)
-        //self.images.append(realmImage)
-        self.collectionView?.reloadData()
-        
-        if Reachability.isConnectedToNetwork(){
-            locationMgr.stopUpdatingLocation()
-        }
     }
+
     
-    
+    //a function to be performed when a user clicks the cancel button
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
         print("The camera has been closed")
-        
     }
     
     
+    //a function to be performed when a user clicks the deletion button to delete images
     @IBAction func deletePhoto(_ sender: UIBarButtonItem) {
-        //Creating UIAlertController and
-        //Setting title and message for the alert dialog
-        let alertController = UIAlertController(title: "Delete this image?", message: "Are you sure you want to delete this image?", preferredStyle: .alert)
+       CollectionViewService.deleteImageFromRealm(selectedFolder: self.selectedFolder, controller: self, collectionView: self.collectionView, hashTagBtn: self.hashTagBtn, uploadBtn: self.uploadBtn, deleteButton: self.deleteButton, textFieldDelegate: self)
         
-        //the confirm action taking the inputs
-        let confirmAction = UIAlertAction(title: "Delete", style: .default) { (_) in
-            
-            let indexpaths = self.collectionView?.indexPathsForSelectedItems
-            var deletedImages:[Image] = []
-            if let indexpaths = indexpaths {
-                for item  in indexpaths {
-                    self.collectionView?.deselectItem(at: (item), animated: true)
-                    
-                    let selectedImage = self.selectedFolder.getImageArray()[item.row]
-                
-                    let realm = try! Realm()
-                    try! realm.write {
-                        realm.delete(selectedImage.getLocation())
-                        realm.delete(selectedImage.getHashTags())
-                    }
-                    
-                  
-                    deletedImages.append(selectedImage)
-                   
-                }
-                
-
-                let realm = try! Realm()
-                try! realm.write {
-                    realm.delete(deletedImages)
-                }
-                
-                let tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", self.selectedFolderType.getName() )
-                
-                
-                let tempFolders = tempFolderType[0].getFolders().filter("name = %@", self.selectedFolder.getName() )
-                
-                self.selectedFolder.clearImageArray()
-                //self.images = [Image]()
-                for i in tempFolders[0].getImages(){
-                    self.selectedFolder.addElementToImageArray(image: i)
-                    //self.images.append(i)
-                }
-                
-                self.collectionView!.deleteItems(at: indexpaths)
-                self.initButtons()
-
-            }
-            
-        }
-        
-        //the cancel action doing nothing
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
-        
-        //adding the action to dialogbox
-        alertController.addAction(confirmAction)
-        alertController.addAction(cancelAction)
-        
-        //finally presenting the dialog box
-        self.present(alertController, animated: true, completion: nil)
+      
     }
     
+    //a function to be performed when a user clicks the hash button and will do the related operations.
     @IBAction func addHashtag(_ sender: UIBarButtonItem) {
-
-        let indexpaths = self.collectionView?.indexPathsForSelectedItems
-      
-        //self.selectedImage = self.selectedFolder.getImageArray()[indexpaths![0].item]
-        
-        let currentHashTags = self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags()
-        
-        var hashtagsString = ""
-        for i in currentHashTags{
-            hashtagsString += "\(i.getHashTag()) "
-           
-        }
-        
-
-        let actionSheet = UIAlertController(title: "This image includes the following hashtags:\n \(hashtagsString)", message: nil, preferredStyle: .actionSheet)
-        
-      
-        
-         let updateHashtags = UIAlertAction(title: "Update hashtags", style: .default, handler: {
-            (alert: UIAlertAction!) -> Void in
-             let textView = UITextView()
-            textView.keyboardType = UIKeyboardType.twitter
-            let alertController = UIAlertController(title: "Update hashtags?", message: "Are you sure you want to update this image hashtag?", preferredStyle: .alert)
-            
-            //the confirm action taking the inputs
-            let confirmAction = UIAlertAction(title: "Update", style: .destructive) { (_) in
-                
-                
-                let indexpaths = self.collectionView?.indexPathsForSelectedItems
-                if indexpaths!.count == 1 {
-
-                        var tempHashTags = textView.text.components(separatedBy: " ")
-                        if(tempHashTags[tempHashTags.count-1]==""){
-                            tempHashTags.remove(at: tempHashTags.count-1)
-                        }
-                        
-                        var hashtags: List<HashTag>
-                        hashtags = List<HashTag>()
-                        var anyProblem: Bool = false
-                        var title = ""
-                        var numberOfDuplicated = 0
-                        for i in tempHashTags{
-                            let firstletter = i.prefix(1)
-                            if (!firstletter.contains("#")){
-                                title = "One or more of your hashtag is missing # that is or are separated by a space"
-                                anyProblem = true
-                            }
-                            
-                            if (i == "#".trimmingCharacters(in: .whitespaces)){
-                                title = "No empty hashtags"
-                                anyProblem = true
-                            }
-                            
-                           
-                            
-                            if ( self.selectedFolder.getImageArray()[indexpaths![0].item].repeatedHashTagFound(i)){
-                                numberOfDuplicated += 1
-                                title = "The hash tag is already in the image; please do not duplicate any hashtags"
-                                if(numberOfDuplicated >  self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags().count){
-                                    anyProblem = true
-                                }
-                            }
-                            
-                            if(anyProblem){
-                                let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-                                
-                                let cancelAction = UIAlertAction(title: "Ok", style: .default) { (_) in }
-                                alert.addAction(cancelAction)
-                                self.present(alert, animated: true)
-                                return
-                            }
-                            hashtags.append(HashTag(hashTag: i))
-                        }
-                    
-                        for i in  self.selectedFolder.getImageArray()[indexpaths![0].item].getHashTags(){
-                            RealmService.shared.delete(i)
-                        }
-
-                        RealmService.shared.update( self.selectedFolder.getImageArray()[indexpaths![0].item], with: ["dateCreated":  self.selectedFolder.getImageArray()[indexpaths![0].item].getDateCreated(), "imageBinaryData": self.selectedFolder.getImageArray()[indexpaths![0].item].getImageBinaryData(),"hashTags": hashtags])
-
-                }
-                }
-            
-            //the cancel action doing nothing
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
-            
-            //adding the action to dialogbox
-            alertController.addAction(confirmAction)
-            alertController.addAction(cancelAction)
-           
-            textView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-            
-            let controller = UIViewController()
-            
-            textView.frame = controller.view.frame
-            controller.view.addSubview(textView)
-            textView.text = hashtagsString
-            alertController.setValue(controller, forKey: "contentViewController")
-         
-            //finally presenting the dialog box
-            self.present(alertController, animated: true, completion: nil)
-            
-            
-        })
-        
-        actionSheet.addAction(updateHashtags)
-        if numOfSelection != 1{
-            updateHashtags.isEnabled = false
-        }else{
-            updateHashtags.isEnabled = true
-        }
-        actionSheet.addAction(UIAlertAction(title: "Add a HashTag to one or multiple Image(s)", style: .default, handler: {
-             (alert: UIAlertAction!) -> Void in
-            let alertController = UIAlertController(title: "Add name?", message: "Enter the hashtag name", preferredStyle: .alert)
-            
-            
-            let confirmAction = UIAlertAction(title: "Add", style: .default) { (_) in
-                let newHashtagName = alertController.textFields?[0].text
-                
-                let indexpaths = self.collectionView?.indexPathsForSelectedItems
-               
-                
-                if let indexpaths = indexpaths {
-                    for item  in indexpaths {
-                        self.collectionView?.deselectItem(at: (item), animated: true)
-
-                    }
-                    self.selectedFolder.addOneOrMultipleHashtagToImages(indexpaths: indexpaths, newHashtagName: newHashtagName!)
-                    
-
-                }
-            }
-            
-            
-            //the cancel action doing nothing
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
-            
-            //adding textfields to our dialog box
-            
-            alertController.addTextField(configurationHandler: { (textField) in
-                
-                let indexpaths = self.collectionView?.indexPathsForSelectedItems
-                for _ in indexpaths!{
-                        
-                        confirmAction.isEnabled = false
-                        
-                        textField.placeholder = "Enter a New Hashtag name"
-                        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextFieldTextDidChange, object: textField, queue: OperationQueue.main) { (notification) in
-                            
-                            let modifiedName = alertController.textFields?[0].text
-                             if let indexpaths = indexpaths {
-                            for item  in indexpaths {
-                                
-                                let image = self.selectedFolder.getImageArray()[item.row]
-                                if !self.selectedFolder.getImageArray()[indexpaths[0].item].repeatedHashTagFound(modifiedName) && !(modifiedName?.trimmingCharacters(in: .whitespaces).isEmpty)! && modifiedName?.prefix(1) == "#"{
-                                confirmAction.isEnabled = true
-                            }else{
-                                confirmAction.isEnabled = false
-                            }
-                                }
-                            }
-                    }}
-            })
-            
-            
-            
-            alertController.addAction(confirmAction)
-            alertController.addAction(cancelAction)
-            
-            //finally presenting the dialog box
-            self.present(alertController, animated: true, completion: nil)
-            
-        }))
-
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        
-        
-        
-        present(actionSheet, animated: true, completion: nil)
+       CollectionViewService.addHashtagOperation(controller: self, collectionView: self.collectionView, selectedFolder: self.selectedFolder, hashTagBtn: self.hashTagBtn, uploadBtn: self.uploadBtn, deleteButton: self.deleteButton, textFieldDelegate: self)
         
     }
     
-
-    func showPregressBarWindow(){
-        let customAlert = self.storyboard?.instantiateViewController(withIdentifier: "CustomAlertID") as! CustomAlertView
-        customAlert.providesPresentationContextTransitionStyle = true
-        customAlert.definesPresentationContext = true
-        customAlert.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
-        customAlert.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
-        customAlert.delegate = self
-        self.present(customAlert, animated: true, completion: nil)
-    }
-    
-    
-    
-    func uploadMedia(_ okButton: UIButton, _ selectionRemaining: Double, progressBar: UIProgressView, progressPercent: UILabel, selectedImage: Image, completion: @escaping (_ url: String?) -> Void) {
-        progressBar.setProgress(0, animated: false)
-        let storageRef = Storage.storage().reference().child(selectedImage.getImageID()+".png")
-        
-        var uploadTask: StorageUploadTask? = nil
-        var getURLTask: Void? = nil
-        
-        getURLTask = storageRef.downloadURL { (url, error) in
-            if url != nil{
-                completion(url?.absoluteString)
-                 self.numOfSuccess = self.numOfSuccess + 1
-                progressPercent.text = String(format: "%.2f%%", (100.0 * (self.numOfSuccess / selectionRemaining)))
-                
-                progressBar.progress = Float(self.numOfSuccess / selectionRemaining)
-                
-                if self.numOfSuccess == selectionRemaining {
-                    okButton.isEnabled = true
-                }
-            }else{
-                
-            
-        
-        uploadTask = storageRef.putData(selectedImage.getImageBinaryData() as Data, metadata: nil, completion: {
-            (metadata, error) in
-                if error != nil {
-                    print("error")
-                    completion(nil)
-                } else {
-                    completion((metadata?.downloadURL()?.absoluteString)!)
-                    // your uploaded photo url.
-                }
-            }
-            )
-        }
-        
-            
-            
-            uploadTask?.observe(.success) { (snapshot) in
-            self.numOfSuccess = self.numOfSuccess + 1
-            
-           // let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount) / Double(snapshot.progress!.totalUnitCount)
-            
-            
-            
-            progressPercent.text = String(format: "%.2f%%", (100.0 * (self.numOfSuccess / selectionRemaining)))
-            
-            progressBar.progress = Float(self.numOfSuccess / selectionRemaining)
-            
-            if self.numOfSuccess == selectionRemaining {
-                okButton.isEnabled = true
-            }
-        }
-    }
-    }
-    
-    func uploadingOperation(_ okButton: UIButton, progressBar: UIProgressView, progressPercent: UILabel){
-        self.numOfSuccess = 0
-        let ref = Database.database().reference()
-        let indexpaths = self.collectionView?.indexPathsForSelectedItems
-        var selectionRemaining = 0
-        if let indexpaths = indexpaths {
-            selectionRemaining = indexpaths.count
-            for item  in indexpaths {
-                self.collectionView?.deselectItem(at: (item), animated: true)
-                let selectedImage = self.selectedFolder.getImageArray()[item.row]
-                
-                self.uploadMedia(okButton ,Double(selectionRemaining), progressBar: progressBar, progressPercent: progressPercent, selectedImage: selectedImage) { url in
-                    if url != nil {
-                        
-                        //ref.child("user").setValue(selectedImage.getImageID())
-                        let calendar = Calendar.current
-                        
-                        let year = calendar.component(.year, from: selectedImage.getDateCreated())
-                        let month = calendar.component(.month, from: selectedImage.getDateCreated())
-                        let day = calendar.component(.day, from: selectedImage.getDateCreated())
-                        let hour = calendar.component(.hour, from: selectedImage.getDateCreated())
-                        let minute = calendar.component(.minute, from: selectedImage.getDateCreated())
-                        let second = calendar.component(.second, from: selectedImage.getDateCreated())
-                        
-                       print("email")
-                        
-                        var userEmail: String = (Auth.auth().currentUser?.email)!
-                        userEmail = userEmail.replacingOccurrences(of: ".", with: ",")
-                        
-                        ref.child(userEmail).child(selectedImage.getImageID()).setValue(
-                            [
-                            "imageID"      : selectedImage.getImageID(),
-                            "dateCreated"    :
-                                ["year": year,
-                                 "month": month,
-                                 "day": day,
-                                 "hour": hour,
-                                 "minute": minute,
-                                  "second": second] as Any,
-                            
-                            "location"     :
-                                ["locationID":selectedImage.getLocation().getLocationID(),
-                                 "latitude":selectedImage.getLocation().getLatitude(),
-                                 "longtitude":selectedImage.getLocation().getLongtitude(),
-                                 "street":selectedImage.getLocation().getStreet(),
-                                 "city":selectedImage.getLocation().getCity(),
-                                 "province":selectedImage.getLocation().getProvince()
-                                    ] as Any,
-                            "Hashtag"       : selectedImage.getHashTagDictionary(),
-                            "imageURL" : url!
-                            ])
-                    }
-                }
-                
-                
-                
-                self.initButtons()
-                
-            }
-        }else{
-            print("no image selected")
-        }
-    }
-    
+    //a function to be performed when a user clicks the uploading button
     @IBAction func uploadImage(_ sender: UIBarButtonItem) {
-        if Reachability.isConnectedToNetwork(){
-         
-            if Auth.auth().currentUser != nil{
         
-        //Creating UIAlertController and
-        //Setting title and message for the alert dialog
-        let alertController = UIAlertController(title: "Upload this image?", message: "Are you sure you want to upload this image?", preferredStyle: .alert)
-        
-        //the confirm action taking the inputs
-        let confirmAction = UIAlertAction(title: "Upload", style: .default) { (_) in
-            self.showPregressBarWindow()
-            //self.progressBar.setProgress(0, animated: false)
-            
-        }
-        
-        //the cancel action doing nothing
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { (_) in }
-        
-        //adding the action to dialogbox
-        alertController.addAction(confirmAction)
-        alertController.addAction(cancelAction)
-        
-        //finally presenting the dialog box
-        self.present(alertController, animated: true, completion: nil)
-            }else{
-                AlertDialog.showAlertMessage(controller: self, title: "Message", message: "You have not signed in the firebase account; You cannot upload images", btnTitle: "Ok")
-                
-            }
-        }else{
-            AlertDialog.showAlertMessage(controller: self, title: "No Networking Message", message: "No Networking Detection", btnTitle: "Ok")
-            
-        }
-        
+        self.uploadingAlertView = self.storyboard?.instantiateViewController(withIdentifier: UploadingAlertView.IDENTIFIER) as! UploadingAlertView
+        CollectionViewService.uploadingImagesToRealm(controller: self, collectionView: self.collectionView, uploadingAlertView: self.uploadingAlertView, selectedFolder: self.selectedFolder, deleteButton: self.deleteButton, hashTagBtn: self.hashTagBtn, uploadBtn: self.uploadBtn)
+
     }
     
-    @IBAction func downloadImage(_ sender: UIBarButtonItem) {
+    //a function to limit number of character
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    
+        guard let text = textField.text else {return true}
+        let newLength = text.count + string.count - range.length
+        return newLength <= ImageViewController.NUM_OF_LIMIT_WORD_CHARACTER
     }
     
-    func initButtons(){
-        deleteButton.isEnabled = false
-        hashTagBtn.isEnabled = false
-        uploadBtn.isEnabled = false
+  
+    
+    func compressImage (_ image: UIImage) -> UIImage {
+        
+        let actualHeight:CGFloat = image.size.height
+        let actualWidth:CGFloat = image.size.width
+        let imgRatio:CGFloat = actualWidth/actualHeight
+        let maxWidth:CGFloat = 120
+        let resizedHeight:CGFloat = maxWidth/imgRatio
+        let compressionQuality:CGFloat = 0.5
+        
+        let rect:CGRect = CGRect(x: 0, y: 0, width: maxWidth, height: resizedHeight)
+        UIGraphicsBeginImageContext(rect.size)
+        image.draw(in: rect)
+        let img: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        let imageData:Data = UIImageJPEGRepresentation(img, compressionQuality)!
+        UIGraphicsEndImageContext()
+        
+        return UIImage(data: imageData)!
+        
     }
 }
 
 extension ImageViewController: UICollectionViewDataSource{
+    
+    //a function to set number of cell to be shown
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         return self.selectedFolder.getImageArray().count
     }
     
-    
+    //a function to set cell property when user see the view and scroll the view
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.identifier, for: indexPath) as! ImageCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.IDENTIFIER, for: indexPath) as! ImageCollectionViewCell
         
-        let image = UIImage(data: (self.selectedFolder.getImageArray() [indexPath.item].getImageBinaryData()) as Data, scale:1.0)
+        let filenameString: NSString = self.selectedFolder.getImageArray() [indexPath.item].getImagePath()
+//        //let image = self.loadImageFromName(filenameString as String)
+        let image = self.selectedFolder.getImageArray()[indexPath.item].loadImageFromPath()
         
-        cell.photoImage.image = image
+//        let image = UIImage(data: (self.selectedFolder.getImageArray() [indexPath.item].getImagePath()) as String, scale:1.0)
+//
+//        let image = UIImage(data: (self.selectedFolder.getImageArray() [indexPath.item].getImageBinaryData()) as Data, scale:1.0)
+
         
-        if edit{
-            cell.uncheckedBoxImage.isHidden = false
-        }else{
-            cell.uncheckedBoxImage.isHidden = true
-        }
+        
+       
+//
+        //cell.photoImage.sd_setShowActivityIndicatorView(true)
+
+        //cell.photoImage.sd_setIndicatorStyle(.gray)
+
+//        i = i + 1
+        // Create a URL in the /tmp directory
+        let imageURL = NSURL(fileURLWithPath: filenameString as String)
+//
+//        // save image to URL
+//        do {
+//            try UIImagePNGRepresentation(image!)?.write(to: imageURL)
+//        } catch { }
+
+        //cell.photoImage.sizeThatFits(1)
+
+        //cell.photoImage.sd_setImage(with: imageURL as URL, placeholderImage: #imageLiteral(resourceName: "lion") , options: [.progressiveDownload])
+        
+         //cell.photoImage.image = self.compressImage(image!)
+        
+//        cell.photoImage.sd_setImage(with: imageURL as URL, placeholderImage: #imageLiteral(resourceName: "lion"), options: [.queryDiskSync], progress: nil
+//            , completed: { (image, error, cacheType, url) in
+//
+                cell.photoImage.image = self.compressImage(image!)
+                
+//            })
+        
+//
+//        cell.photoImage.sd_setImageWithURL(
+//            imageURL as URL,
+//            placeholderImage: UIImage.init(named: "default-profile-icon"),
+//            options: [.progressiveDownload],
+//            progress: nil,
+//            completed: { (image: UIImage?, error: NSError?, cacheType: SDImageCacheType!, imageURL: NSURL?) in
+//
+//                guard let image = image else { return }
+//                print("Image arrived!")
+//                cell.profileImageView.image = resizeImage(image, newWidth: 200)
+//        }
+//        )
+        
+        cell.cellImageWhenSettingPropertyAndScrollingRecreating(isEditing: isEditing)
         
         return cell
     }
+    
+    
+    
 }
 
 extension ImageViewController: UICollectionViewDelegate{
+    
+    //a function to be performed when a cell is selected
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        self.numOfSelection = self.collectionView?.indexPathsForSelectedItems?.count
-        if numOfSelection == 0{
-            deleteButton.isEnabled = false
-            hashTagBtn.isEnabled = false
-            uploadBtn.isEnabled = false
-            self.cameraBtn.isEnabled = true
-            self.downloadBtn.isEnabled = true
-        }else if numOfSelection == 1{
-            deleteButton.isEnabled = true
-            hashTagBtn.isEnabled = true
-            uploadBtn.isEnabled = true
-            self.cameraBtn.isEnabled = false
-            self.downloadBtn.isEnabled = false
-        }
+        ToolBarService.toolbarItemWhenCellIsClickedAndDeclicked(selectedFolder:self.selectedFolder, collectionView: self.collectionView, hashTagBtn: self.hashTagBtn, uploadBtn: self.uploadBtn, deleteButton: self.deleteButton, cameraBtn: self.cameraBtn, downloadBtn: self.downloadBtn)
     }
     
+    //a function to be performed when a cell is deselected
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-        
-        self.numOfSelection = self.collectionView?.indexPathsForSelectedItems?.count
-        if numOfSelection == 0{
-            deleteButton.isEnabled = false
-            hashTagBtn.isEnabled = false
-            uploadBtn.isEnabled = false
-        }else if numOfSelection == 1{
-            deleteButton.isEnabled = true
-            hashTagBtn.isEnabled = true
-            uploadBtn.isEnabled = true
-        }
+        ToolBarService.toolbarItemWhenCellIsClickedAndDeclicked(selectedFolder:self.selectedFolder, collectionView: self.collectionView, hashTagBtn: self.hashTagBtn, uploadBtn: self.uploadBtn, deleteButton: self.deleteButton, cameraBtn: self.cameraBtn, downloadBtn: self.downloadBtn)
         
     }
     
 }
 
-extension ImageViewController: CustomAlertViewDelegate {
+//MARK: PinterestLayoutDelegate
+
+extension ImageViewController: PinterestLayoutDelegate {
     
-    func runProgressBarRunning(progressBar: UIProgressView, progressPercent: UILabel, okButton: UIButton) {
-        self.uploadingOperation(okButton, progressBar: progressBar, progressPercent: progressPercent)
+    func collectionView(collectionView: UICollectionView,
+                        heightForImageAtIndexPath indexPath: IndexPath,
+                        withWidth: CGFloat) -> CGFloat {
+        //let filenameString: NSString = self.selectedFolder.getImageArray() [indexPath.item].getImagePath()
+        //let image = self.loadImageFromName(filenameString as String)
+        let image = self.selectedFolder.getImageArray()[indexPath.item].loadImageFromPath()
+        
+        //let image = self.loadImageFromPath(filenameString)
+        
+        //let image = self.selectedFolder.getImageArray()[indexPath.item].getUIImage()
+        
+        return image!.height(forWidth: withWidth)
+    }
+    
+    func collectionView(collectionView: UICollectionView,
+                        heightForAnnotationAtIndexPath indexPath: IndexPath,
+                        withWidth: CGFloat) -> CGFloat {
+        return 0
     }
 }

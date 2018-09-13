@@ -33,7 +33,7 @@ class SearchBarService{
         return header
     }
     
-    public static func searchBarButtonChangeWhenIsEditing(viewController: UIViewController, collectionView: UICollectionView, searchBar: UISearchBar,isBeginEditing: Bool){
+    public static func searchBarButtonChangeWhenIsEditing(viewController: UIViewController, collectionView: UICollectionView, searchBar: UISearchBar, tapGesture: UITapGestureRecognizer,isBeginEditing: Bool){
         let cells = collectionView.visibleCells
         if(isBeginEditing == false){
             for i in cells{
@@ -42,6 +42,7 @@ class SearchBarService{
             viewController.navigationItem.rightBarButtonItem?.isEnabled = true
             collectionView.allowsSelection = true
             searchBar.showsBookmarkButton = true
+            tapGesture.isEnabled = false
             //searchBar.isUserInteractionEnabled = true
             //searchBar.alpha = 1
             //searchBar.isHidden = true
@@ -53,6 +54,7 @@ class SearchBarService{
             viewController.navigationItem.rightBarButtonItem?.isEnabled = false
             collectionView.allowsSelection = false
             searchBar.showsBookmarkButton = false
+            tapGesture.isEnabled = true
             //searchBar.isUserInteractionEnabled = false
             //searchBar.user
             //searchBar.isHidden = false

@@ -7,8 +7,12 @@
 //
 
 import UIKit
-
-class CustomAlertView: UIViewController {
+import FirebaseStorage
+class UploadingAlertView: UIViewController {
+    
+    var numOfSuccess: Double = 0.0
+    var uploadTask: StorageUploadTask = StorageUploadTask()
+    @IBOutlet weak var signleProgress: UIProgressView!
     
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var alertView: UIView!
@@ -17,7 +21,7 @@ class CustomAlertView: UIViewController {
     
     @IBOutlet weak var progressBar: UIProgressView!
     
-    var delegate: CustomAlertViewDelegate?
+ //   var delegate: CustomAlertViewDelegate?
     let alertViewGrayColor = UIColor(red: 224.0/255.0, green: 224.0/255.0, blue: 224.0/255.0, alpha: 1)
     
     override func viewDidLoad() {
@@ -30,7 +34,7 @@ class CustomAlertView: UIViewController {
         setupView()
         animateView()
         self.progressBar.setProgress(0, animated: false)
-        delegate?.runProgressBarRunning(progressBar: self.progressBar, progressPercent: self.progressPercent, okButton: self.okButton)
+        //delegate?.runProgressBarRunning()
         self.okButton.isEnabled = false
         
     }
@@ -56,11 +60,116 @@ class CustomAlertView: UIViewController {
     }
     
 
+    func initailizedView(controller: UIViewController){
+        //show customAlert Window
+        
+        self.providesPresentationContextTransitionStyle = true
+        self.definesPresentationContext = true
+        self.modalPresentationStyle = UIModalPresentationStyle.overCurrentContext
+        self.modalTransitionStyle = UIModalTransitionStyle.crossDissolve
+        //self.customAlert.delegate = self
+        controller.present(self, animated: true, completion: nil)
+    }
     
     
     @IBAction func tapOkBtn(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
         
     }
+    
+    
+    func uploadMedia(_ selectionRemaining: Double, selectedImage: Image, completion: @escaping (_ url: String?) -> Void) {
+        progressBar.setProgress(0, animated: false)
+        let storageRef = Storage.storage().reference().child(selectedImage.getImageID()+".png")
+        
+        //uploadTask: StorageUploadTask? = nil
+        var getURLTask: Void? = nil
+        
+        getURLTask = storageRef.downloadURL { (url, error) in
+            if url != nil{
+                completion(url?.absoluteString)
+                self.numOfSuccess = self.numOfSuccess + 1
+                self.progressPercent.text = String(format: "%.2f%%", (100.0 * (self.numOfSuccess / selectionRemaining)))
+                
+                self.progressBar.progress = Float(self.numOfSuccess / selectionRemaining)
+                
+                if self.numOfSuccess == selectionRemaining {
+                    self.okButton.isEnabled = true
+                }
+            }else{
+                
+                //self.customAlert.putData(storageRef: storageRef, selectedImage: selectedImage, completion: completion)
+                
+                self.uploadTask = storageRef.putData(selectedImage.getImageBinaryData() as Data, metadata: nil, completion: {
+                                    (metadata, error) in
+                                    if error != nil {
+                                        print("error")
+                                        //self.failedToUpload = true
+                                        completion(nil)
+                                    } else {
+                                        completion((metadata?.downloadURL()?.absoluteString)!)
+                                        // your uploaded photo url.
+                                    }
+                                }
+                
+                
+                )
+            }
+            
+            
+            self.uploadTask.observe(.success) { (snapshot) in
+                self.numOfSuccess = self.numOfSuccess + 1
+                
+                self.progressPercent.text = String(format: "%.2f%%", (100.0 * (self.numOfSuccess / selectionRemaining)))
+                
+                self.progressBar.progress = Float(self.numOfSuccess / selectionRemaining)
+                
+                if self.numOfSuccess == selectionRemaining {
+                    self.okButton.isEnabled = true
+                }
+                
+                
+            }
+            
+        }
+    }
+    
+    
+    func uploadingOperation(collectionView: UICollectionView, selectedFolder: Folder, deletedButton: UIBarButtonItem, hashTagBtn: UIBarButtonItem, uploadBtn: UIBarButtonItem){
+        //self.numOfSuccess = 0
+        let indexpaths = collectionView.indexPathsForSelectedItems
+        var selectionRemaining = 0
+        if let indexpaths = indexpaths {
+            selectionRemaining = indexpaths.count
+            for item  in indexpaths {
+                collectionView.deselectItem(at: (item), animated: true)
+                let selectedImage = selectedFolder.getImageArray()[item.row]
+                
+                self.uploadMedia(Double(selectionRemaining), selectedImage: selectedImage) { (url) in
+                    if url != nil {
+                        
+                        selectedImage.uploadImageToFirebase(url: url)
+                    }else{
+                        //self.customAlert.dismiss(animated: true, completion: nil)
+                        self.dismiss(animated: true, completion: {
+                            AlertDialog.showAlertMessage(controller: self, title: "Failure Message", message: "Failed to upload; ensure you checked if you login or any network issues", btnTitle: "Ok")
+                        })
+                    }
+                }
+                
+                ToolBarService.initButtons(deleteButton: deletedButton, hashTagBtn: hashTagBtn, uploadBtn: uploadBtn)
+                
+            }
+        }else{
+            print("no image selected")
+        }
+    }
+    
+    
+    @IBAction func stopUploading(_ sender: Any) {
+        self.uploadTask.pause()
+    }
+    
+    
     
 }

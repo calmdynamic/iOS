@@ -9,9 +9,10 @@
 /* Begin PBXBuildFile section */
 		42EAC4E5C419304CFD1A36E6 /* Pods_PhotoManager.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6509AE5E25B4F5B0C420E0C /* Pods_PhotoManager.framework */; };
 		8703A2DA2052DD4E00A9AE04 /* ImageDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8703A2D92052DD4E00A9AE04 /* ImageDetailsViewController.swift */; };
+		8737ABB021487D9500C68BB6 /* DemoDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737ABAF21487D9500C68BB6 /* DemoDataService.swift */; };
+		8737ABB22148868800C68BB6 /* InformationPropertyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8737ABB12148868800C68BB6 /* InformationPropertyView.swift */; };
 		8743CB742123E16000B870BB /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8743CB732123E16000B870BB /* GoogleService-Info.plist */; };
 		8743CB7A21277BE200B870BB /* AuthenticationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8743CB7921277BE200B870BB /* AuthenticationViewController.swift */; };
-		87456F5F204F1BAC0096B1B3 /* UtilityService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87456F5E204F1BAC0096B1B3 /* UtilityService.swift */; };
 		874ECC492138D9BA001AF1C1 /* SearchBarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874ECC482138D9BA001AF1C1 /* SearchBarService.swift */; };
 		874ECC4B213A2C22001AF1C1 /* ToolBarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874ECC4A213A2C22001AF1C1 /* ToolBarService.swift */; };
 		874ECC4D213B3D86001AF1C1 /* TabBarService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874ECC4C213B3D86001AF1C1 /* TabBarService.swift */; };
@@ -36,6 +37,7 @@
 		87B7E9B920589E0F00E2678A /* ImageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B7E9B820589E0F00E2678A /* ImageViewController.swift */; };
 		87B7E9BB20589EF300E2678A /* ImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B7E9BA20589EF300E2678A /* ImageCollectionViewCell.swift */; };
 		87BBA029206707F9003E5771 /* StatisticsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87BBA028206707F9003E5771 /* StatisticsTableViewController.swift */; };
+		87CCE49A21445F0B003F82AD /* LocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87CCE49921445F0B003F82AD /* LocationService.swift */; };
 		87D50A48205B567700AA1658 /* ImageSearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D50A47205B567700AA1658 /* ImageSearchViewController.swift */; };
 		87D50A4A205B5A0F00AA1658 /* ImageSearchCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D50A49205B5A0F00AA1658 /* ImageSearchCell.swift */; };
 		87D50A4C20601FC100AA1658 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D50A4B20601FC100AA1658 /* MapViewController.swift */; };
@@ -43,6 +45,9 @@
 		87D605C12064377C0011566D /* FolderTypeListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */; };
 		87D605C520644AAD0011566D /* FolderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C420644AAD0011566D /* FolderListViewController.swift */; };
 		87D605C7206456EC0011566D /* FolderListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C6206456EC0011566D /* FolderListTableViewCell.swift */; };
+		87D71A362149C888001F0F32 /* ItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A352149C888001F0F32 /* ItemViewController.swift */; };
+		87D71A3A214A1BF2001F0F32 /* ImagePageViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */; };
+		87D71A3C214ABFC2001F0F32 /* UIStoryboard+ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */; };
 		87ECF9FF206165D800E3671F /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87ECF9FE206165D800E3671F /* NavigationViewController.swift */; };
 		87F6231D204777120092672B /* HashTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F62316204777110092672B /* HashTag.swift */; };
 		87F6231E204777120092672B /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F62317204777110092672B /* Location.swift */; };
@@ -53,9 +58,7 @@
 		87F736D32127E52E0065AB9D /* DownloadListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736D22127E52E0065AB9D /* DownloadListViewController.swift */; };
 		87F736E02128E6980065AB9D /* PhotoManagerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736DF2128E6980065AB9D /* PhotoManagerUITests.swift */; };
 		87F736E821290C2E0065AB9D /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736E721290C2E0065AB9D /* DownloadManager.swift */; };
-		87F736EC212A5BB70065AB9D /* CustomAlertViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EA212A5BB60065AB9D /* CustomAlertViewDelegate.swift */; };
-		87F736ED212A5BB70065AB9D /* CustomAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EB212A5BB60065AB9D /* CustomAlertView.swift */; };
-		87F736EF212A5C560065AB9D /* UIButton+Border.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EE212A5C560065AB9D /* UIButton+Border.swift */; };
+		87F736ED212A5BB70065AB9D /* UploadingAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */; };
 		87F736F3212D05260065AB9D /* GettingFirebaseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F2212D05260065AB9D /* GettingFirebaseData.swift */; };
 		87F736F5212D29DB0065AB9D /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F4212D29DB0065AB9D /* AlertDialog.swift */; };
 		87F736F7212E73AE0065AB9D /* EmailCheckingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */; };
@@ -78,11 +81,12 @@
 		4CA6C20A06D49465518194D2 /* Pods-PhotoManager.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PhotoManager.release.xcconfig"; path = "Pods/Target Support Files/Pods-PhotoManager/Pods-PhotoManager.release.xcconfig"; sourceTree = "<group>"; };
 		8703A2D92052DD4E00A9AE04 /* ImageDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailsViewController.swift; sourceTree = "<group>"; };
 		8703A2EF20539B3200A9AE04 /* EasyRealm.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EasyRealm.h; sourceTree = "<group>"; };
+		8737ABAF21487D9500C68BB6 /* DemoDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoDataService.swift; sourceTree = "<group>"; };
+		8737ABB12148868800C68BB6 /* InformationPropertyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InformationPropertyView.swift; sourceTree = "<group>"; };
 		8743CB732123E16000B870BB /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		8743CB7921277BE200B870BB /* AuthenticationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewController.swift; sourceTree = "<group>"; };
 		87456F15204B6B200096B1B3 /* Realm.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Realm.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		87456F18204B6B260096B1B3 /* RealmSwift.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = RealmSwift.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		87456F5E204F1BAC0096B1B3 /* UtilityService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtilityService.swift; sourceTree = "<group>"; };
 		874ECC482138D9BA001AF1C1 /* SearchBarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarService.swift; sourceTree = "<group>"; };
 		874ECC4A213A2C22001AF1C1 /* ToolBarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolBarService.swift; sourceTree = "<group>"; };
 		874ECC4C213B3D86001AF1C1 /* TabBarService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarService.swift; sourceTree = "<group>"; };
@@ -109,6 +113,7 @@
 		87B7E9B820589E0F00E2678A /* ImageViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewController.swift; sourceTree = "<group>"; };
 		87B7E9BA20589EF300E2678A /* ImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		87BBA028206707F9003E5771 /* StatisticsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsTableViewController.swift; sourceTree = "<group>"; };
+		87CCE49921445F0B003F82AD /* LocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationService.swift; sourceTree = "<group>"; };
 		87D50A47205B567700AA1658 /* ImageSearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchViewController.swift; sourceTree = "<group>"; };
 		87D50A49205B5A0F00AA1658 /* ImageSearchCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchCell.swift; sourceTree = "<group>"; };
 		87D50A4B20601FC100AA1658 /* MapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
@@ -116,6 +121,9 @@
 		87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTypeListTableViewCell.swift; sourceTree = "<group>"; };
 		87D605C420644AAD0011566D /* FolderListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListViewController.swift; sourceTree = "<group>"; };
 		87D605C6206456EC0011566D /* FolderListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListTableViewCell.swift; sourceTree = "<group>"; };
+		87D71A352149C888001F0F32 /* ItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemViewController.swift; sourceTree = "<group>"; };
+		87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePageViewViewController.swift; sourceTree = "<group>"; };
+		87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+ViewController.swift"; sourceTree = "<group>"; };
 		87ECF9FE206165D800E3671F /* NavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		87F62316204777110092672B /* HashTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashTag.swift; sourceTree = "<group>"; };
 		87F62317204777110092672B /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -128,9 +136,7 @@
 		87F736DF2128E6980065AB9D /* PhotoManagerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManagerUITests.swift; sourceTree = "<group>"; };
 		87F736E12128E6980065AB9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		87F736E721290C2E0065AB9D /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
-		87F736EA212A5BB60065AB9D /* CustomAlertViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAlertViewDelegate.swift; sourceTree = "<group>"; };
-		87F736EB212A5BB60065AB9D /* CustomAlertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomAlertView.swift; sourceTree = "<group>"; };
-		87F736EE212A5C560065AB9D /* UIButton+Border.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIButton+Border.swift"; sourceTree = "<group>"; };
+		87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadingAlertView.swift; sourceTree = "<group>"; };
 		87F736F2212D05260065AB9D /* GettingFirebaseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GettingFirebaseData.swift; sourceTree = "<group>"; };
 		87F736F4212D29DB0065AB9D /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCheckingViewController.swift; sourceTree = "<group>"; };
@@ -185,6 +191,8 @@
 				87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */,
 				87D605C6206456EC0011566D /* FolderListTableViewCell.swift */,
 				87A2E8B9206599F600D5304C /* BarChart.swift */,
+				87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */,
+				8737ABB12148868800C68BB6 /* InformationPropertyView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -214,7 +222,6 @@
 		8753C90B2047735C00A08FDB /* PhotoManager */ = {
 			isa = PBXGroup;
 			children = (
-				87F736E9212A5BB60065AB9D /* CustomAlertView */,
 				87456F082049F3690096B1B3 /* Views */,
 				87F623262047773D0092672B /* Services */,
 				87F62323204777270092672B /* Models */,
@@ -236,6 +243,7 @@
 				87B476E620572F800091AF8F /* FolderTypeViewController.swift */,
 				87B7E9B42058848800E2678A /* FolderViewController.swift */,
 				87B7E9B820589E0F00E2678A /* ImageViewController.swift */,
+				87F736D22127E52E0065AB9D /* DownloadListViewController.swift */,
 				8703A2D92052DD4E00A9AE04 /* ImageDetailsViewController.swift */,
 				87D50A47205B567700AA1658 /* ImageSearchViewController.swift */,
 				87D50A4B20601FC100AA1658 /* MapViewController.swift */,
@@ -245,9 +253,10 @@
 				87A2E8BD206690A700D5304C /* SettingTableViewController.swift */,
 				87BBA028206707F9003E5771 /* StatisticsTableViewController.swift */,
 				8743CB7921277BE200B870BB /* AuthenticationViewController.swift */,
-				87F736D22127E52E0065AB9D /* DownloadListViewController.swift */,
 				87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */,
 				87F736FA212E7DCB0065AB9D /* PasswordResetingViewController.swift */,
+				87D71A352149C888001F0F32 /* ItemViewController.swift */,
+				87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -270,7 +279,6 @@
 			children = (
 				87F736E721290C2E0065AB9D /* DownloadManager.swift */,
 				87F62324204777340092672B /* RealmService.swift */,
-				87456F5E204F1BAC0096B1B3 /* UtilityService.swift */,
 				875E034020616E29002E9D8A /* Reachability.swift */,
 				87F736F2212D05260065AB9D /* GettingFirebaseData.swift */,
 				87F736F4212D29DB0065AB9D /* AlertDialog.swift */,
@@ -284,6 +292,9 @@
 				874ECC52213B9CB5001AF1C1 /* NavigationService.swift */,
 				874ECC56213CC193001AF1C1 /* StringService.swift */,
 				874ECC58213F01DE001AF1C1 /* CameraService.swift */,
+				87CCE49921445F0B003F82AD /* LocationService.swift */,
+				8737ABAF21487D9500C68BB6 /* DemoDataService.swift */,
+				87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -295,16 +306,6 @@
 				87F736E12128E6980065AB9D /* Info.plist */,
 			);
 			path = PhotoManagerUITests;
-			sourceTree = "<group>";
-		};
-		87F736E9212A5BB60065AB9D /* CustomAlertView */ = {
-			isa = PBXGroup;
-			children = (
-				87F736EE212A5C560065AB9D /* UIButton+Border.swift */,
-				87F736EA212A5BB60065AB9D /* CustomAlertViewDelegate.swift */,
-				87F736EB212A5BB60065AB9D /* CustomAlertView.swift */,
-			);
-			path = CustomAlertView;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -422,8 +423,10 @@
 				"${BUILT_PRODUCTS_DIR}/GTMOAuth2/GTMOAuth2.framework",
 				"${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework",
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
+				"${BUILT_PRODUCTS_DIR}/PinterestLayout/PinterestLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Realm/Realm.framework",
 				"${BUILT_PRODUCTS_DIR}/RealmSwift/RealmSwift.framework",
+				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/leveldb-library/leveldb.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -434,8 +437,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMOAuth2.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GTMSessionFetcher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PinterestLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Realm.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RealmSwift.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/leveldb.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -499,11 +504,11 @@
 				875E034120616E29002E9D8A /* Reachability.swift in Sources */,
 				87B7E9BB20589EF300E2678A /* ImageCollectionViewCell.swift in Sources */,
 				87D605C520644AAD0011566D /* FolderListViewController.swift in Sources */,
-				87456F5F204F1BAC0096B1B3 /* UtilityService.swift in Sources */,
 				87D50A4A205B5A0F00AA1658 /* ImageSearchCell.swift in Sources */,
+				87CCE49A21445F0B003F82AD /* LocationService.swift in Sources */,
+				8737ABB22148868800C68BB6 /* InformationPropertyView.swift in Sources */,
 				87D50A4C20601FC100AA1658 /* MapViewController.swift in Sources */,
 				87F736FB212E7DCB0065AB9D /* PasswordResetingViewController.swift in Sources */,
-				87F736EC212A5BB70065AB9D /* CustomAlertViewDelegate.swift in Sources */,
 				87D50A48205B567700AA1658 /* ImageSearchViewController.swift in Sources */,
 				874ECC57213CC193001AF1C1 /* StringService.swift in Sources */,
 				87D605C7206456EC0011566D /* FolderListTableViewCell.swift in Sources */,
@@ -513,14 +518,17 @@
 				87F6231E204777120092672B /* Location.swift in Sources */,
 				8753C90D2047735C00A08FDB /* AppDelegate.swift in Sources */,
 				87F736F7212E73AE0065AB9D /* EmailCheckingViewController.swift in Sources */,
+				87D71A3A214A1BF2001F0F32 /* ImagePageViewViewController.swift in Sources */,
 				87ECF9FF206165D800E3671F /* NavigationViewController.swift in Sources */,
 				87BBA029206707F9003E5771 /* StatisticsTableViewController.swift in Sources */,
 				87F736D32127E52E0065AB9D /* DownloadListViewController.swift in Sources */,
 				874ECC4D213B3D86001AF1C1 /* TabBarService.swift in Sources */,
 				87F62321204777120092672B /* Type.swift in Sources */,
 				87F62322204777120092672B /* Folder.swift in Sources */,
+				8737ABB021487D9500C68BB6 /* DemoDataService.swift in Sources */,
 				87A2E8BA206599F600D5304C /* BarChart.swift in Sources */,
 				877F22B32131514300617C2C /* CascadeDeleting.swift in Sources */,
+				87D71A362149C888001F0F32 /* ItemViewController.swift in Sources */,
 				87B7E9B52058848800E2678A /* FolderViewController.swift in Sources */,
 				8743CB7A21277BE200B870BB /* AuthenticationViewController.swift in Sources */,
 				874ECC4F213B3FBA001AF1C1 /* CollectionViewService.swift in Sources */,
@@ -529,12 +537,12 @@
 				87F62325204777340092672B /* RealmService.swift in Sources */,
 				874ECC492138D9BA001AF1C1 /* SearchBarService.swift in Sources */,
 				877F22B12130DA0300617C2C /* TypeList.swift in Sources */,
-				87F736EF212A5C560065AB9D /* UIButton+Border.swift in Sources */,
 				87B7E9B72058868A00E2678A /* FolderCollectionViewCell.swift in Sources */,
 				87F736F3212D05260065AB9D /* GettingFirebaseData.swift in Sources */,
-				87F736ED212A5BB70065AB9D /* CustomAlertView.swift in Sources */,
+				87F736ED212A5BB70065AB9D /* UploadingAlertView.swift in Sources */,
 				874ECC51213B8DE0001AF1C1 /* TransitionToOtherViewService.swift in Sources */,
 				87B7E9B920589E0F00E2678A /* ImageViewController.swift in Sources */,
+				87D71A3C214ABFC2001F0F32 /* UIStoryboard+ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

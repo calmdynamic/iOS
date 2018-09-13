@@ -16,14 +16,13 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
     let defaults = UserDefaults.standard
     
     let locationMgr = CLLocationManager()
-    weak var delegate: PositionControllerDelegate?
+    //weak var delegate: PositionControllerDelegate?
     let pickerController = UIImagePickerController()
     var location: Location!
     var newImage: UIImage!
     var selectedFolder: Folder!
     var selectedFolderType: Type!
   
-    
     override func viewWillAppear(_ animated: Bool) {
         var isEmpty: Bool
         isEmpty = false
@@ -91,18 +90,18 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
         print(Realm.Configuration.defaultConfiguration.fileURL!)
         self.location = Location()
         RealmService.shared.deleteAll()
-        //UtilityService.shared.defaultData()
+        
         let firstTimeLaunch = self.defaults.bool(forKey: "firstTimeLaunch")
 
         //if firstTimeLaunch == false{
-            UtilityService.shared.defaultData()
-            UtilityService.shared.dummyData()
+        
+            DemoDataService.dummyData()
             defaults.set(true, forKey: "firstTimeLaunch")
             print("false v")
         //}
         
         
-        UtilityService.shared.locationChecker(locationMgr: locationMgr, viewController: self)
+        //UtilityService.shared.locationChecker(locationMgr: locationMgr, viewController: self)
 
         locationMgr.delegate = self
         pickerController.delegate = self
@@ -112,22 +111,22 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
 
     @IBAction func cameraButton(_ sender: UIButton) {
  
-        if Reachability.isConnectedToNetwork(){
-            self.locationMgr.requestWhenInUseAuthorization()
-            self.locationMgr.startUpdatingLocation()
-        }
-        
-        if(!CameraService.cameraChecker(pickerController: pickerController, viewController: self)){
-            self.addImageForTesting()
-            
-        }
+//        if Reachability.isConnectedToNetwork(){
+//            self.locationMgr.requestWhenInUseAuthorization()
+//            self.locationMgr.startUpdatingLocation()
+//        }
+//
+//        if(!CameraService.cameraChecker(pickerController: pickerController, viewController: self)){
+//            self.addImageForTesting()
+//
+//        }
 
     }
     
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        UtilityService.shared.getLocationDetailedInfo(locationMgr: self.locationMgr, location: self.location)
+        //UtilityService.shared.getLocationDetailedInfo(locationMgr: self.locationMgr, location: self.location)
 
     }
     
@@ -151,7 +150,9 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
         
         picker.dismiss(animated: true, completion: nil)
         newImage = info[UIImagePickerControllerOriginalImage] as? UIImage
-        UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.newImage, location: self.location)
+        
+        self.selectedFolder.addImageToRealm(newImage: newImage, location: self.location)
+        //UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.newImage, location: self.location)
         if Reachability.isConnectedToNetwork(){
             locationMgr.stopUpdatingLocation()
         }
@@ -168,7 +169,7 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
         if segue.identifier == "navImageSegue"{
             let imageVC = segue.destination as! ImageViewController
 
-            imageVC.selectedFolderType = self.selectedFolderType
+            //imageVC.selectedFolderType = self.selectedFolderType
             imageVC.selectedFolder = self.selectedFolder
 
         }

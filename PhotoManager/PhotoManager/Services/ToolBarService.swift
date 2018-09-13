@@ -25,17 +25,55 @@ class ToolBarService{
         }
     }
     
+    public static func toolbarItemWhenCellIsClickedAndDeclicked(selectedFolder: Folder, collectionView:UICollectionView ,hashTagBtn: UIBarButtonItem, uploadBtn: UIBarButtonItem, deleteButton: UIBarButtonItem, cameraBtn: UIButton, downloadBtn: UIButton){
+        //let numOfSelection = collectionView.indexPathsForSelectedItems?.count
+        selectedFolder.setNumOfImageSelection(number: (collectionView.indexPathsForSelectedItems?.count)!)
+        if selectedFolder.getNumOfImageSelection() == 0{
+            deleteButton.isEnabled = false
+            hashTagBtn.isEnabled = false
+            uploadBtn.isEnabled = false
+            cameraBtn.isEnabled = true
+            downloadBtn.isEnabled = true
+        }else if selectedFolder.getNumOfImageSelection() == 1{
+            deleteButton.isEnabled = true
+            hashTagBtn.isEnabled = true
+            uploadBtn.isEnabled = true
+            cameraBtn.isEnabled = false
+            downloadBtn.isEnabled = false
+        }
+    }
+    
+    
+   
+    
     public static func initButtons(addButton: UIBarButtonItem, updateButton: UIBarButtonItem, deleteButton: UIBarButtonItem){
         addButton.isEnabled = true
         updateButton.isEnabled = false
         deleteButton.isEnabled = false
     }
     
-    public static func toolbarItemChangeWhenSetEditing(toolbar: UIToolbar, addButton: UIBarButtonItem, updateButton: UIBarButtonItem, deleteButton: UIBarButtonItem, editing: Bool){
+    public static func initButtons(deleteButton: UIBarButtonItem, hashTagBtn: UIBarButtonItem, uploadBtn: UIBarButtonItem){
+        deleteButton.isEnabled = false
+        hashTagBtn.isEnabled = false
+        uploadBtn.isEnabled = false
+    }
+    
+    public static func toolbarItemChangeWhenSetEditing(toolbar: UIToolbar, addButton: UIBarButtonItem, updateButton: UIBarButtonItem, deleteButton: UIBarButtonItem,navigationItem:UINavigationItem, editing: Bool){
+        navigationItem.hidesBackButton = editing
         toolbar.isHidden = !editing
         addButton.isEnabled = true
         deleteButton.isEnabled = false
         updateButton.isEnabled = false
+    }
+    
+    public static func toolbarItemChangeWhenSetEditing(toolbar: UIToolbar, uploadBtn: UIBarButtonItem, hashTagBtn: UIBarButtonItem, deleteButton: UIBarButtonItem,downloadBtn: UIButton, cameraBtn:UIButton, navigationItem:UINavigationItem, editing: Bool){
+        navigationItem.hidesBackButton = editing
+        cameraBtn.isEnabled = !editing
+        downloadBtn.isEnabled = !editing
+        toolbar.isHidden = !editing
+        deleteButton.isEnabled = false
+        hashTagBtn.isEnabled = false
+        uploadBtn.isEnabled = false
     }
     
     public static func initToolBarWhenWillAppear(toolbar: UIToolbar){

@@ -18,9 +18,9 @@ class DownloadListViewController: UIViewController {
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    var selectedFolderType: Type!
+    var selectedFolderTypeName: String!
     var selectedFolder: Folder!
-    var location: Location!
+   // var location: Location!
     var currentKey:String!
     var currentID:String!
     
@@ -37,6 +37,7 @@ class DownloadListViewController: UIViewController {
         imagesURL = [String]()
        // self.activityIndicator.startAnimating()
         fetechData2()
+        self.tabBarController?.tabBar.isHidden = true
 
     }
     
@@ -226,12 +227,15 @@ class DownloadListViewController: UIViewController {
     
     
     func saveDownloadedImage(indexPath: IndexPath){
-        let realmImage: Any? = UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.imagesArray[indexPath.item].getUIImage(), location: self.location)
         
-        if realmImage != nil
-        {
+        //to be fixed
+        //selectedFolder.addImageToRealm(newImage: self.imagesArray[indexPath.item].getUIImage(), location: self.imagesArray[indexPath.item].getLocation())
+            //UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: self.selectedFolderTypeName, newImage: self.imagesArray[indexPath.item].getUIImage(), location: self.location)
+        
+        //if realmImage != nil
+        //{
             AlertDialog.showAlertMessage(controller: self, title: "Message", message: "Saved Successfully", btnTitle: "Ok")
-        }
+        //}
         
     }
     
@@ -275,7 +279,8 @@ extension DownloadListViewController: UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: self.identifier, for: indexPath) as! FolderListTableViewCell
         
         //cell.folderListLabel.text = self.folders[indexPath.item].getName()
-        cell.folderListImage.image = self.imagesArray[indexPath.item].getUIImage()
+        //to be fixed
+        //cell.folderListImage.image = self.imagesArray[indexPath.item].getUIImage()
         
         return cell
     }

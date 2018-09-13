@@ -47,7 +47,7 @@ class ImageSearchViewController: UIViewController, UISearchBarDelegate{
 
             self.selectedImage = self.foundImages[indexpaths![0].item]
 
-            imageDetailVC.image = self.selectedImage
+            imageDetailVC.currentImage = self.selectedImage
 
         }
         
@@ -65,9 +65,10 @@ extension ImageSearchViewController: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.identifier, for: indexPath) as! ImageSearchCell
        
-        let image = UIImage(data: (self.foundImages[indexPath.item].getImageBinaryData()) as Data, scale:1.0)
+        //to be fixed
+        //let image = UIImage(data: (self.foundImages[indexPath.item].getImageBinaryData()) as Data, scale:1.0)
         
-        cell.photoImage.image = image
+        //cell.photoImage.image = image
         
         return cell
     }
