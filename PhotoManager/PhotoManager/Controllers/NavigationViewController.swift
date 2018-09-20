@@ -9,62 +9,27 @@
 import UIKit
 import CoreLocation
 import RealmSwift
-//import FirebaseDatabase
 
 class NavigationViewController: UIViewController, UIImagePickerControllerDelegate,UINavigationControllerDelegate, CLLocationManagerDelegate {
-
+    
     let defaults = UserDefaults.standard
     
     let locationMgr = CLLocationManager()
-    //weak var delegate: PositionControllerDelegate?
     let pickerController = UIImagePickerController()
-    var location: Location!
-    var newImage: UIImage!
-    var selectedFolder: Folder!
-    var selectedFolderType: Type!
-  
+    var selectedFolder: Folder = Folder()
     override func viewWillAppear(_ animated: Bool) {
-        var isEmpty: Bool
-        isEmpty = false
-        locationMgr.stopUpdatingLocation()
-        var tempFolderType: Results<Type>?
-        if let selectedFolderTypeName = self.defaults.string(forKey: "selectedFolderType"){
-            tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", selectedFolderTypeName)
-            if(!(tempFolderType?.isEmpty)!){
-                self.selectedFolderType = tempFolderType![0]
-            }else{
-                isEmpty = true
-                self.selectedFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", "Default")[0]
-            }
-
-        }else{
-            tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", "Default")
-            self.selectedFolderType = tempFolderType![0]
-            defaults.set("Default", forKey: "selectedFolderType")
-            
-        }
-        var tempFolder: Results<Folder>?
-        if let selectedFolderName = self.defaults.string(forKey: "selectedFolder"){
-            tempFolder = RealmService.shared.realm.objects(Folder.self).filter("name = %@", selectedFolderName)
-            if(!(tempFolder?.isEmpty)!){
-                self.selectedFolder = tempFolder![0]
-            }else{
-                isEmpty = true
-                self.selectedFolder = RealmService.shared.realm.objects(Folder.self).filter("name = %@", "Default")[0]
-            }
-          
-        }else{
-            tempFolder = RealmService.shared.realm.objects(Folder.self).filter("name = %@", "Default")
-            self.selectedFolder = tempFolder![0]
-            defaults.set("Default", forKey: "selectedFolder")
-            
-        }
         
-        if (isEmpty){
-            
-            defaults.set("Default", forKey: "selectedFolderType")
-            defaults.set("Default", forKey: "selectedFolder")
-            
+        
+        let selectedFolderName = UserDefaultService.getUserDefaultFolderName2()
+        let selectedFolderTypeName = UserDefaultService.getUserDefaultFolderTypeName2()
+        
+        let selectedFolderType: Type = Type()
+        selectedFolderType.getFolderDataFromRealm(typeName: selectedFolderTypeName)
+        
+        for i in selectedFolderType.getFolderArray(){
+            if i.getName() == selectedFolderName{
+                selectedFolder = i
+            }
         }
         
     }
@@ -72,93 +37,51 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
     override func viewDidLoad() {
         super.viewDidLoad()
         
-  
-        //        let ref = Database.database().reference()
-//
-//        ref.child("someid/name").setValue("Mike")
-//
-//        ref.childByAutoId().setValue(["name": "Tom", "role":"Admin", "age":30])
-//
-//        ref.child("someid").observeSingleEvent(of: .value)
-//        {
-//            (snapshot) in
-//            let employeedata = snapshot.value as? [String: Any]
-//            print(employeedata)
-//        }
-//
-//
+        
         print(Realm.Configuration.defaultConfiguration.fileURL!)
-        self.location = Location()
+
+        let typeList: TypeList = TypeList()
+        
+        typeList.getFolderTypeDataFromRealm()
+        
+        
+        typeList.deletedAllTypeImage(deletedFolderTypes: typeList.getFolderTypes())
+        
         RealmService.shared.deleteAll()
         
         let firstTimeLaunch = self.defaults.bool(forKey: "firstTimeLaunch")
-
+        
         //if firstTimeLaunch == false{
         
-            DemoDataService.dummyData()
-            defaults.set(true, forKey: "firstTimeLaunch")
-            print("false v")
+        DemoDataService.dummyData()
+        defaults.set(true, forKey: "firstTimeLaunch")
         //}
         
-        
-        //UtilityService.shared.locationChecker(locationMgr: locationMgr, viewController: self)
-
-        locationMgr.delegate = self
-        pickerController.delegate = self
+        LocationService.initLocationMgr(controller: self, locationMgr: locationMgr)
+        CameraService.initCameraPicker(controller: self, pickerController: pickerController)
     }
     
-
-
+    
+    
     @IBAction func cameraButton(_ sender: UIButton) {
- 
-//        if Reachability.isConnectedToNetwork(){
-//            self.locationMgr.requestWhenInUseAuthorization()
-//            self.locationMgr.startUpdatingLocation()
-//        }
-//
-//        if(!CameraService.cameraChecker(pickerController: pickerController, viewController: self)){
-//            self.addImageForTesting()
-//
-//        }
-
+        
+        CameraService.addPhotoWhenClickingCameraBtn(selectedFolder: selectedFolder, controller: self, pickerController: pickerController)
+        
     }
     
-
+    
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        //UtilityService.shared.getLocationDetailedInfo(locationMgr: self.locationMgr, location: self.location)
-
-    }
-    
-    
-    
-    
-    func addImageForTesting(){
-
-        self.selectedFolder.addImageForTestingToRealm()
-        //tilityService.shared.addImageForTestingToRealm(selectedFolder: self.selectedFolder, selectedFolderTypeName: self.selectedFolderType.getName(), location: self.location)
-        
-        if Reachability.isConnectedToNetwork(){
-            locationMgr.stopUpdatingLocation()
-        }
-        
-        
+        CameraService.addImageToRealmWhenOnDeviceWithNetworking(locationMgr: locationMgr, locations: locations, selectedFolder: selectedFolder)
     }
     
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        
-        picker.dismiss(animated: true, completion: nil)
-        newImage = info[UIImagePickerControllerOriginalImage] as? UIImage
-        
-        self.selectedFolder.addImageToRealm(newImage: newImage, location: self.location)
-        //UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: selectedFolderType.getName(), newImage: self.newImage, location: self.location)
-        if Reachability.isConnectedToNetwork(){
-            locationMgr.stopUpdatingLocation()
-        }
+        CameraService.takePhotoIfWifiTakePhotoAndSavePhotoToRealmIfNoWifi(selectedFolder: self.selectedFolder, locationMgr: self.locationMgr, picker: picker, didFinishPickingMediaWithInfo: info)
     }
-
-
+    
+    
+    
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
         print("The camera has been closed")
@@ -168,10 +91,7 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "navImageSegue"{
             let imageVC = segue.destination as! ImageViewController
-
-            //imageVC.selectedFolderType = self.selectedFolderType
             imageVC.selectedFolder = self.selectedFolder
-
         }
         
     }
@@ -180,16 +100,17 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
     @IBAction func folderButton(_ sender: UIButton) {
         self.tabBarController?.selectedIndex = 1
     }
-
+    
     @IBAction func mapButton(_ sender: UIButton) {
         self.tabBarController?.selectedIndex = 2
         
     }
-
+    
     @IBAction func statisticsButton(_ sender: UIButton) {
         self.tabBarController?.selectedIndex = 3
     }
     @IBAction func settingButton(_ sender: UIButton) {
         self.tabBarController?.selectedIndex = 4
     }
+    
 }

@@ -24,39 +24,12 @@ class SettingTableViewController: UITableViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         self.getCurrentUserName()
-        var isEmpty: Bool
-        isEmpty = false
-        var tempFolderType: Results<Type>?
-        if let selectedFolderTypeName = self.defaults.string(forKey: "selectedFolderType"){
-            tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", selectedFolderTypeName)
-            if(!(tempFolderType?.isEmpty)!){
-                isEmpty = false
-            }else{
-                isEmpty = true
-            }
-        }
-        var tempFolder: Results<Folder>?
-        if let selectedFolderName = self.defaults.string(forKey: "selectedFolder"){
-            tempFolder = RealmService.shared.realm.objects(Folder.self).filter("name = %@", selectedFolderName)
-            if(!(tempFolder?.isEmpty)!){
-                isEmpty = false
-            }else{
-                isEmpty = true
-            }
-        }
-        
-        if (isEmpty){
-            tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", "Default")
-            tempFolder = RealmService.shared.realm.objects(Folder.self).filter("name = %@", "Default")
-            defaults.set("Default", forKey: "selectedFolderType")
-            defaults.set("Default", forKey: "selectedFolder")
-            
-        }
         
 
-        folderTypeSaveLocation.text = self.defaults.string(forKey: "selectedFolderType")
+        folderSaveLoation.text = UserDefaultService.getUserDefaultFolderName2()
+        folderTypeSaveLocation.text = UserDefaultService.getUserDefaultFolderTypeName2()
 
-        folderSaveLoation.text = self.defaults.string(forKey: "selectedFolder")
+        
         
     }
     

@@ -31,15 +31,10 @@ class LocationService{
                         
                         if pm.count > 0 {
                             let pm = placemarks![0]
+                            
                             location = Location(latitude: loc.coordinate.latitude, longtitude: loc.coordinate.longitude, street: pm.thoroughfare!, city: pm.locality!, province: pm.administrativeArea!)
                             
                             completion(location)
-                            
-//                            if !selectedFolder.getDidAddAlready(){
-//                                selectedFolder.addImageToRealm(newImage: selectedFolder.getNewImage(), location: location)
-//                                collectionView.reloadData()
-//                                selectedFolder.setDidAddAlready(didAddAlready: true)
-//                            }
                             
                         }
                     }

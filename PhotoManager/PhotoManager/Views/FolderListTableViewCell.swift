@@ -12,6 +12,9 @@ class FolderListTableViewCell: UITableViewCell {
 
     @IBOutlet weak var folderListLabel: UILabel!
     @IBOutlet weak var folderListImage: UIImageView!
+    
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

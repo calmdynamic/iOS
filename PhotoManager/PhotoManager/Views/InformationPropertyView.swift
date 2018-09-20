@@ -13,7 +13,14 @@ class InformationPropertyView: UIViewController{
     
     var controller: UIViewController = UIViewController()
     
+    
+    @IBOutlet weak var typeName: UILabel!
+    
+    @IBOutlet weak var folderName: UILabel!
     @IBOutlet weak var imageTitle: UILabel!
+    
+    @IBOutlet weak var imageTimeCreated: UILabel!
+    
     
     @IBOutlet weak var mapDataUnavailable: UILabel!
     @IBOutlet weak var address: UILabel!
@@ -24,6 +31,8 @@ class InformationPropertyView: UIViewController{
     @IBOutlet weak var imageDateCreated: UILabel!
     @IBOutlet weak var hashTextView: UITextView!
     @IBOutlet weak var mainView: UIView!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -50,9 +59,15 @@ class InformationPropertyView: UIViewController{
         self.address.layer.borderColor = myColor.cgColor
         
         self.imageDateCreated.layer.borderWidth = 1.0
+        self.imageTimeCreated.layer.borderWidth = 1.0
+        self.typeName.layer.borderWidth = 1.0
+        self.folderName.layer.borderWidth = 1.0
         self.address.layer.borderWidth = 1.0
         
         self.imageDateCreated.layer.cornerRadius = 10
+        self.imageTimeCreated.layer.cornerRadius = 10
+        self.typeName.layer.cornerRadius = 10
+        self.folderName.layer.cornerRadius = 10
         self.address.layer.cornerRadius = 10
         self.hashTextView.layer.cornerRadius = 10
         mainView.layer.cornerRadius = 15
@@ -79,8 +94,19 @@ class InformationPropertyView: UIViewController{
         self.initailizeAddress(image: image)
         self.initializeHashtag(image: image)
         self.initializeDateCreated(image: image)
+        self.initializeTimeCreated(image: image)
         self.initailizeMapView(image: image)
         self.initailizeImageTitle(imageTitle: imageTitle)
+        self.initailizeImageTypeName(image: image)
+        self.initailizeImageFolderName(image: image)
+    }
+    
+    private func initailizeImageFolderName(image: Image){
+        self.folderName.text = "Folder Name: " + image.getSubcategoryName()
+    }
+    
+    private func initailizeImageTypeName(image: Image){
+        self.typeName.text = "Type Name: " + image.getCategoryName()
     }
     
     private func initailizeImageTitle(imageTitle: String){
@@ -88,28 +114,25 @@ class InformationPropertyView: UIViewController{
     }
     
     private func initializeHashtag(image: Image){
-        var hashTagsString = ""
-        for i in image.getHashTags(){
-            hashTagsString += i.getHashTag() + " "
-        }
-        self.hashTextView.text = "Hashtags: " + hashTagsString
+        self.hashTextView.text = "Hashtags: " + image.getHashtagsString()
         self.hashTextView.isEditable = false
         self.hashTextView.isScrollEnabled = true
     }
     
     private func initializeDateCreated(image: Image){
-        
         self.imageDateCreated.textAlignment = NSTextAlignment.center
-        let dateFormatter1 = DateFormatter()
-        dateFormatter1.dateFormat = "yyyy MMM dd";
-        let mydt = dateFormatter1.string(from: image.getDateCreated())
-        
-        
-        self.imageDateCreated.text = "Date Created: " + mydt
+        self.imageDateCreated.text = "Date Created: " + image.getImageCreatedDateString()
     }
     
+    private func initializeTimeCreated(image: Image){
+        self.imageTimeCreated.textAlignment = NSTextAlignment.center
+        self.imageTimeCreated.text = "Time Created: " + image.getImageCreatedTimeString()
+    }
+    
+    
     private func initailizeAddress(image: Image){
-        address.text = image.getLocation().getStreet() != "" ? image.getLocation().getStreet() + " " + image.getLocation().getCity() + " " + image.getLocation().getProvince() : "Address is unavailable"
+        
+        address.text = image.getLocation().getAddressString()
         address.textAlignment = NSTextAlignment.center
     }
     

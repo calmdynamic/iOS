@@ -67,7 +67,7 @@ class TransitionToOtherViewService{
             
             //self.selectedFolder.getImageArray()[indexPath.item].loadImageFromPath()
             imageDetailVC.currentImage = selectedFolder.getImageArray()[indexpaths![0].item]
-            imageDetailVC.imageArray = selectedFolder.getImageArray()
+            imageDetailVC.selectedFolder = selectedFolder
             
         }
         

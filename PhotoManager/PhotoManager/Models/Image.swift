@@ -13,38 +13,38 @@ import FirebaseDatabase
 
 class Image: Object{
     @objc private dynamic var imageID: String = UUID().uuidString
+    @objc private dynamic var categoryName: String = String()
+    @objc private dynamic var subCategoryName: String = String()
     @objc private dynamic var dateCreated: Date = Date()
     @objc private dynamic var imagePath: NSString?
     @objc private dynamic var location: Location?
     private var hashTags = List<HashTag>()
+    
+    private var uploadedTime: Date = Date()
 
     override class func primaryKey() -> String?{
         return "imageID"
     }
     
-    convenience init(dateCreated: Date ,imagePath: NSString, hashTags: List<HashTag>, location: Location){
+    convenience init(categoryName: String, subCategoryName: String, dateCreated: Date ,imagePath: NSString, hashTags: List<HashTag>, location: Location){
         self.init()
+        self.categoryName = categoryName
+        self.subCategoryName = subCategoryName
         self.dateCreated = dateCreated
         self.imagePath = imagePath
         self.hashTags = hashTags
         self.location = location
 
     }
+
     
-    convenience init(dateCreated: Date ,image: UIImage, hashTags: List<HashTag>, location: Location){
+    convenience init(imageID: String, categoryName: String, subCategoryName: String, dateCreated: Date ,imagePath: String, hashTags: List<HashTag>, location: Location){
         self.init()
-        self.dateCreated = dateCreated
-        self.setImagePath(image)
-        self.hashTags = hashTags
-        self.location = location
-        
-    }
-    
-    convenience init(imageID: String, dateCreated: Date ,image: UIImage, hashTags: List<HashTag>, location: Location){
-        self.init()
+        self.categoryName = categoryName
+        self.subCategoryName = subCategoryName
         self.imageID = imageID
         self.dateCreated = dateCreated
-        self.setImagePath(image)
+        self.imagePath = imagePath as NSString
         self.hashTags = hashTags
         self.location = location
         
@@ -67,11 +67,8 @@ class Image: Object{
         self.imagePath = imagePath
     }
     
-    public func setImagePath(_ image: UIImage){
-        
-        let data: Data? = UIImagePNGRepresentation(image)
-        self.imagePath =  data?.base64EncodedString(options: .endLineWithLineFeed) as! NSString
-        //self.imageBinaryData = NSData(data: UIImageJPEGRepresentation(image, 0.9)!)
+    public func setUploadedTime(_ uploadedTime: Date){
+        self.uploadedTime = uploadedTime
     }
     
     public func getLocation() -> Location{
@@ -91,19 +88,52 @@ class Image: Object{
         return self.dateCreated
     }
     
+    public func getCategoryName() -> String{
+        return self.categoryName
+    }
+    
+    public func getSubcategoryName() -> String{
+        return self.subCategoryName
+    }
+    
+    public func getImageCreatedDateString() -> String{
+        let dateFormatter1 = DateFormatter()
+        dateFormatter1.dateFormat = "yyyy MMM dd"
+        let mydt = dateFormatter1.string(from: self.getDateCreated())
+        
+        return mydt
+    }
+    
+   
+    
+    
+    public func getImageCreatedTimeString() -> String{
+        let dateFormatter1 = DateFormatter()
+        dateFormatter1.dateFormat = "hh:mm:ss a"
+        let mydt = dateFormatter1.string(from: self.getDateCreated())
+        
+        return mydt
+    }
+    
+    public func getHashtagsString() -> String{
+        var hashTagsString = ""
+        for i in self.getHashTags(){
+            hashTagsString += i.getHashTag() + " "
+        }
+        return hashTagsString
+    }
+    
+    
+    
+    public func getImageURL() -> URL{
+        return URL(string: (self.getImagePath() as String?)!)!
+    }
+ 
+    
     public func getImagePath() -> NSString{
         return self.imagePath!
     }
     
-//    public func getUIImage() -> UIImage{
-//    let data = Data(base64Encoded: self.imagePath, options: .ignoreUnknownCharacters)
-//            return UIImage(data: data)
-//        //return  UIImage(data: (self.imageBinaryData)! as Data, scale:1.0)!
-//    }
-//    
-//    public func getHashTags() -> LinkingObjects<HashTag>{
-//        return self.hashTags
-//    }
     public func getHashTagDictionary() -> NSDictionary{
         var dict = [String: String]()
         for hashtag in self.hashTags {
@@ -113,12 +143,7 @@ class Image: Object{
         return dict as NSDictionary
     }
     
-//    public func addArrayToHashtag(tempHashTags: [String]){
-//        for i in tempHashTags{
-//            self.hashTags.append(HashTag(hashTag: i))
-//        }
-//    }
-    
+
     public func repeatedHashTagFound(_ typeText: String!) -> Bool{
             
         if let tempTypeName = typeText?.trimmingCharacters(in: .whitespaces){
@@ -225,6 +250,14 @@ class Image: Object{
         let minute = calendar.component(.minute, from: self.getDateCreated())
         let second = calendar.component(.second, from: self.getDateCreated())
         
+        let currentTime = Date()
+        let currentYear = calendar.component(.year, from: currentTime)
+        let currentMonth = calendar.component(.month, from: currentTime)
+        let currentDay = calendar.component(.day, from: currentTime)
+        let currentHour = calendar.component(.hour, from: currentTime)
+        let currentMinute = calendar.component(.minute, from: currentTime)
+        let currentSecond = calendar.component(.second, from: currentTime)
+        
         print("email")
         
         var userEmail: String = (Auth.auth().currentUser?.email)!
@@ -250,9 +283,21 @@ class Image: Object{
                      "province":self.getLocation().getProvince()
                         ] as Any,
                 "Hashtag"       : self.getHashTagDictionary(),
-                "imageURL" : url!
+                "imageURL" : url!,
+                "uploadedDate" :
+                    ["year": currentYear,
+                     "month": currentMonth,
+                     "day": currentDay,
+                     "hour": currentHour,
+                     "minute": currentMinute,
+                     "second": currentSecond] as Any,
+                "categoryName" : self.categoryName,
+                "subCategoryName" : self.subCategoryName
             ])
     }
+    
+    
+    
 
     
     func loadImageFromPath() -> UIImage? {
@@ -266,6 +311,10 @@ class Image: Object{
         }
     }
     
+    func getImageBinaryData() -> NSData{
+        return UIImageJPEGRepresentation(self.loadImageFromPath()!, 0.9)! as NSData
+    }
+    
     func getImageIndexFromArray(imageArray: [Image])->Int{
         var count = 0
         for i in imageArray{
@@ -277,24 +326,51 @@ class Image: Object{
         return count
     }
     
-//    func loadImageFromName(_ imgName: String) -> UIImage? {
-//
-//        guard  imgName.characters.count > 0 else {
-//            print("ERROR: No image name")
-//            return UIImage()
-//        }
-//
-//        let imgPath = getDocumentsDirectory().appendingPathComponent(imgName)
-//        let image = loadImageFromPath(imgPath as NSString)
-//        return image
-//    }
-//    func getDocumentsDirectory() -> NSString {
-//        let paths = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)
-//        let documentsDirectory = paths[0]
-//        //print("Path: \(documentsDirectory)")
-//        return documentsDirectory as NSString
-//    }
-   
+    static func compressImage (_ image: UIImage) -> UIImage {
+        
+        let actualHeight:CGFloat = image.size.height
+        let actualWidth:CGFloat = image.size.width
+        let imgRatio:CGFloat = actualWidth/actualHeight
+        let maxWidth:CGFloat = 120
+        let resizedHeight:CGFloat = maxWidth/imgRatio
+        let compressionQuality:CGFloat = 0.5
+        
+        let rect:CGRect = CGRect(x: 0, y: 0, width: maxWidth, height: resizedHeight)
+        UIGraphicsBeginImageContext(rect.size)
+        image.draw(in: rect)
+        let img: UIImage = UIGraphicsGetImageFromCurrentImageContext()!
+        let imageData:Data = UIImageJPEGRepresentation(img, compressionQuality)!
+        UIGraphicsEndImageContext()
+        
+        return UIImage(data: imageData)!
+        
+    }
     
+    static public func getImageSizeInMB(image: UIImage) -> String{
+        let imageSize = (NSData(data: UIImageJPEGRepresentation(image, 1)!).length)
+        let imageSizeInByte = imageSize/1024
+        let imageSizeInKB = imageSizeInByte/1024
+        let formattedImageSize = String(format: "%.2f%MB", imageSizeInKB)
+        
+        return formattedImageSize
+    }
+    
+    public func getUploadedDateString() -> String{
+        let dateFormatter1 = DateFormatter()
+        dateFormatter1.dateFormat = "yyyy MMM dd"
+        let mydt = dateFormatter1.string(from: self.uploadedTime)
+        
+        return mydt
+    }
+    
+    
+    
+    public func getUploadedTimeString() -> String{
+        let dateFormatter1 = DateFormatter()
+        dateFormatter1.dateFormat = "hh:mm:ss a"
+        let mydt = dateFormatter1.string(from: self.uploadedTime)
+        
+        return mydt
+    }
 }
 

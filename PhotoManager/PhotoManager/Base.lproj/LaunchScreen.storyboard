@@ -32,7 +32,7 @@
                                     <constraint firstItem="Pqm-7K-dej" firstAttribute="leading" secondItem="4Q5-kq-66U" secondAttribute="leading" constant="27" id="ZAA-im-PMS"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Photo Manager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhb-bu-XEi">
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="PhotoManager" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rhb-bu-XEi">
                                 <rect key="frame" x="0.0" y="518" width="375" height="129"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="129" id="yrH-nT-QwZ"/>

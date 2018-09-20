@@ -82,61 +82,8 @@ class Location: Object{
         return self.province
     }
     
-//    public func isLocationDataComplete() -> Bool{
-//        
-//        if self.latitude == 0{
-//            return false
-//        }else if self.longtitude == 0{
-//            return false
-//        }else if self.street == ""{
-//            return false
-//        }else if self.city == ""{
-//            return false
-//        }else if self.province == ""{
-//            return false
-//        }else{
-//            return true
-//        }
-//    }
-    
-
-//    func setLocationData(locations: CLLocation){
-//
-//        self.latitude = locations.coordinate.latitude
-//        self.longtitude = locations.coordinate.longitude
-//
-//        //if Reachability.isConnectedToNetwork(){
-//        let ceo: CLGeocoder = CLGeocoder()
-//        let loc: CLLocation = CLLocation(latitude: self.latitude, longitude: self.longtitude)
-//
-//        ceo.reverseGeocodeLocation(loc, completionHandler:
-//            {(placemarks, error) in
-//                if (error != nil)
-//                {
-//                    print("reverse geodcode fail: \(error!.localizedDescription)")
-//                }
-//                if placemarks != nil{
-//                    let pm = placemarks! as [CLPlacemark]
-//
-//                    if pm.count > 0 {
-//                        let pm = placemarks![0]
-//                        let street = pm.thoroughfare
-//                        let city = pm.locality
-//                        let province = pm.administrativeArea
-//                        self.city = city!
-//                        self.street = street!
-//                        self.province = province!
-//
-//
-//                        if !self.didAddAlready{
-//                            self.addAsset()
-//                            self.didAddAlready = true
-//                        }
-//
-//                    }
-//                }
-//        })
-//        //}
-//    }
+    public func getAddressString() -> String{
+        return self.getStreet() != "" ? self.getStreet() + " " + self.getCity() + " " + self.getProvince() : "Address is unavailable"
+    }
     
 }

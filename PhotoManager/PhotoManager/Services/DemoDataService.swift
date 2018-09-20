@@ -20,18 +20,18 @@ class DemoDataService{
                 i.createSportFolders()
                 for j in i.getFolders(){
                     if j.getName() == "Olympics"{
-                        //j.createOlympicData()
+                        j.createOlympicData()
                     }
                 }
             }
             if i.getName() == "Mountains"{
                 i.createMountainFolders()
                 for j in i.getFolders(){
-                    if j.getName() == "RockyMountain"{
-                        //j.createRockeyMountainData()
+                    if j.getName() == "Rocky"{
+                        j.createRockeyMountainData()
                     }
-                    if j.getName() == "GrouseMountain"{
-                        //j.createGrouseMountainData()
+                    if j.getName() == "Grouse"{
+                        j.createGrouseMountainData()
                     }
                 }
             }
@@ -39,7 +39,7 @@ class DemoDataService{
                 i.createDefaultFolder()
                 for j in i.getFolders(){
                     if j.getName() == "Default"{
-                        //j.createDefaultData()
+                        j.createDefaultData()
                     }
                 }
             }

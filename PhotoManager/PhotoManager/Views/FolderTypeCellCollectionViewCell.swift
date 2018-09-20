@@ -19,6 +19,8 @@ class FolderTypeCellCollectionViewCell: UICollectionViewCell {
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        
+        
         self.checkedCell = false
         self.isEditing = false
     }
@@ -38,6 +40,7 @@ class FolderTypeCellCollectionViewCell: UICollectionViewCell {
             if folderTypeLabel.text == "Default"{
                 uncheckedBoxImage.isHidden = true
                 isUserInteractionEnabled = false
+                
             }else{
                 uncheckedBoxImage.isHidden = false
                 isUserInteractionEnabled = true

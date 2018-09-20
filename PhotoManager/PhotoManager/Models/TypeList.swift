@@ -34,11 +34,39 @@ class TypeList{
     func addFolderTypeToRealm(typename: String){
         var folders: List<Folder>
         folders = List<Folder>()
-        let newType = Type(name: typename, folders: folders, folderCount: folders.count)
+        let newType = Type(name: typename, folders: folders)
+        
         newType.addToRealm()
         self.folderTypes.append(newType)
     }
     
+    func getNumOfEmptyFolderType()->Int{
+        var count = 0
+        
+        for i in self.folderTypes{
+            if i.getFolderCount() == 0{
+                count = count + 1
+            }
+            
+        }
+        return count
+    }
+    
+    func getNumOfReaminingFolderType()->Int{
+        var count = 0
+        
+        for i in self.folderTypes{
+            if i.getFolderCount() != 0{
+                count = count + 1
+            }
+            
+        }
+        if self.folderTypes.count == count{
+            return 0
+        }else{
+            return count
+        }
+    }
     
     func createTypeData(){
         self.addFolderTypeToRealm(typename: "Default")
@@ -58,23 +86,31 @@ class TypeList{
         self.addFolderTypeToRealm(typename: "Languages")
         self.addFolderTypeToRealm(typename: "Algorithm")
         self.addFolderTypeToRealm(typename: "Food")
-        self.addFolderTypeToRealm(typename: "Philosophy")
+        self.addFolderTypeToRealm(typename: "Phylosophy")
         self.addFolderTypeToRealm(typename: "History")
         self.addFolderTypeToRealm(typename: "Travel")
     }
     
+    func deletedAllTypeImage(deletedFolderTypes: [Type]){
+        for i in deletedFolderTypes{
+            for j in i.getFolders(){
+                j.deleteImageFromFileDirectory(deletedImages: j.getImages())
+            }
+        }
+    }
+    
+    
     func deleteFolderTypeFromRealm(indexpaths: [IndexPath]){
         
         var deletedFolderTypes:[Type] = []
-        var folders: List<Folder>
-        
+
         for item  in indexpaths {
             let folderType = self.getOneFolderTypeByIndedx(index: item.row)
-//            folders = folderType.getFolders()
-//            folderType.deleteFoldersFromRealm(folders: folders)
-//
+
             deletedFolderTypes.append(folderType)
         }
+        
+        self.deletedAllTypeImage(deletedFolderTypes: deletedFolderTypes)
         
         guard let database = try? Realm() else { return }
         // to delete Result<ContactEntity>
@@ -86,10 +122,7 @@ class TypeList{
         } catch {
             // handle write error here
         }
-        
-//        for i in deletedFolderTypes{
-//            RealmService.shared.delete(i)
-//        }
+
             let tempFolderTypes = RealmService.shared.realm.objects(Type.self).sorted(byKeyPath: "dateCreated", ascending: true)
 
 
@@ -115,6 +148,15 @@ class TypeList{
             RealmService.shared.update(self.getOneFolderTypeByIndedx(index: indexPath.item), with: ["name": modifiedName, "folders": sectionFolders])
             
         }
+    }
+    
+    func getOneFolderTypeByName(typeName: String) ->Type{
+        for i in self.folderTypes{
+            if i.getName() == typeName{
+                return i
+            }
+        }
+        return Type()
     }
     
     func getOneFolderTypeByIndedx(index: Int) -> Type{

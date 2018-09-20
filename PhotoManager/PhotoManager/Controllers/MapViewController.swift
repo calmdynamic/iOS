@@ -20,14 +20,18 @@ class MapViewController: UIViewController {
             mapView.removeAnnotation(i)
         }
         
+        let BClocation = CLLocation(latitude: Double(49.246292), longitude: Double(-123.116226))
+                                    
+        centerMapOnLocation(location: BClocation)
         updateMapKit()
     }
     override func viewDidLoad() {
         super.viewDidLoad()
 
     }
-
-    let regionRadius: CLLocationDistance = 100000
+    
+    
+    let regionRadius: CLLocationDistance = 40000
     
     
     func updateMapKit(){
@@ -44,6 +48,8 @@ class MapViewController: UIViewController {
             let array = i.split(separator: " ")
             
             let location = CLLocation(latitude: Double(round(Double(array[0])!*1000)/1000), longitude: Double(round(Double(array[1])!*1000)/1000))
+            
+          
         
         let count = locationCount(location: location)
         

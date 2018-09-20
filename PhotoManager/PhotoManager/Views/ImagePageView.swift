@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ImagePageViewViewController: NSObject, UIPageViewControllerDataSource {
+class ImagePageView: NSObject, UIPageViewControllerDataSource {
 
     var imageArray: [Image] = []
     
@@ -28,7 +28,7 @@ class ImagePageViewViewController: NSObject, UIPageViewControllerDataSource {
     
     fileprivate func goBackPage(_ viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as! ItemViewController).itemIndex
+        var index = (viewController as! ImageSliderView).itemIndex
         if index == 0 || index == NSNotFound {
             return nil
         }
@@ -38,7 +38,7 @@ class ImagePageViewViewController: NSObject, UIPageViewControllerDataSource {
     
     fileprivate func goFowardPage(_ viewController: UIViewController) -> UIViewController? {
         
-        var index = (viewController as! ItemViewController).itemIndex
+        var index = (viewController as! ImageSliderView).itemIndex
         
         if index == NSNotFound {
             return nil;
@@ -51,9 +51,9 @@ class ImagePageViewViewController: NSObject, UIPageViewControllerDataSource {
     }
 
     
-    func getItemController(_ itemIndex: Int)-> ItemViewController?{
+    func getItemController(_ itemIndex: Int)-> ImageSliderView?{
         if itemIndex < imageArray.count{
-            let pageItemController = UIStoryboard.getViewController("Main", identifier: "ItemController") as! ItemViewController
+            let pageItemController = UIStoryboard.getViewController("Main", identifier: "ItemController") as! ImageSliderView
             pageItemController.itemIndex = itemIndex
             pageItemController.image = imageArray[itemIndex].loadImageFromPath()!
             

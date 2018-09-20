@@ -85,9 +85,11 @@ extension FolderTypeListViewController: UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: self.identifier, for: indexPath) as! FolderTypeListTableViewCell
         
-        cell.folderTyleListLabel.text = self.folderTypes[indexPath.item].getName()
+        cell.folderTyleListLabel.text = self.folderTypes[indexPath.item].getFolderCount()==0 ? "\(self.folderTypes[indexPath.item].getName()) [Empty]" : "\(self.folderTypes[indexPath.item].getName()) [\(self.folderTypes[indexPath.item].getFolderCount())]"
         cell.folderTypeListImage.image = #imageLiteral(resourceName: "folder_Category")
         
+        cell.isUserInteractionEnabled = self.folderTypes[indexPath.item].getFolderCount()==0 ? false:true
+        cell.folderTyleListLabel.textColor = self.folderTypes[indexPath.item].getFolderCount()==0 ? UIColor.gray : UIColor.black
         return cell
     }
 

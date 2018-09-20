@@ -28,7 +28,6 @@
 		875E034120616E29002E9D8A /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 875E034020616E29002E9D8A /* Reachability.swift */; };
 		877F22B12130DA0300617C2C /* TypeList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877F22B02130DA0200617C2C /* TypeList.swift */; };
 		877F22B32131514300617C2C /* CascadeDeleting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 877F22B22131514300617C2C /* CascadeDeleting.swift */; };
-		87A2E8BA206599F600D5304C /* BarChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A2E8B9206599F600D5304C /* BarChart.swift */; };
 		87A2E8BE206690A700D5304C /* SettingTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A2E8BD206690A700D5304C /* SettingTableViewController.swift */; };
 		87B476E720572F800091AF8F /* FolderTypeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B476E620572F800091AF8F /* FolderTypeViewController.swift */; };
 		87B476E92057371D0091AF8F /* FolderTypeCellCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B476E82057371D0091AF8F /* FolderTypeCellCollectionViewCell.swift */; };
@@ -45,9 +44,17 @@
 		87D605C12064377C0011566D /* FolderTypeListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */; };
 		87D605C520644AAD0011566D /* FolderListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C420644AAD0011566D /* FolderListViewController.swift */; };
 		87D605C7206456EC0011566D /* FolderListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D605C6206456EC0011566D /* FolderListTableViewCell.swift */; };
-		87D71A362149C888001F0F32 /* ItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A352149C888001F0F32 /* ItemViewController.swift */; };
-		87D71A3A214A1BF2001F0F32 /* ImagePageViewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */; };
+		87D71A362149C888001F0F32 /* ImageSliderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A352149C888001F0F32 /* ImageSliderView.swift */; };
+		87D71A3A214A1BF2001F0F32 /* ImagePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A39214A1BF2001F0F32 /* ImagePageView.swift */; };
 		87D71A3C214ABFC2001F0F32 /* UIStoryboard+ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */; };
+		87D71A3E214C8970001F0F32 /* SharingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A3D214C8970001F0F32 /* SharingService.swift */; };
+		87D71A40214D6A5E001F0F32 /* UploadingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A3F214D6A5E001F0F32 /* UploadingService.swift */; };
+		87D71A44214E35E7001F0F32 /* DownloadTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A43214E35E7001F0F32 /* DownloadTableViewCell.swift */; };
+		87D71A46214F8106001F0F32 /* DownloadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A45214F8106001F0F32 /* DownloadService.swift */; };
+		87D71A48214FCE19001F0F32 /* ImageArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A47214FCE19001F0F32 /* ImageArray.swift */; };
+		87D71A4A214FDBB1001F0F32 /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A49214FDBB1001F0F32 /* FirebaseService.swift */; };
+		87D71A4C21509344001F0F32 /* UserDefaultService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D71A4B21509343001F0F32 /* UserDefaultService.swift */; };
+		87EC5E8C2152D0D100F2F81F /* StatisticsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87EC5E8B2152D0D100F2F81F /* StatisticsService.swift */; };
 		87ECF9FF206165D800E3671F /* NavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87ECF9FE206165D800E3671F /* NavigationViewController.swift */; };
 		87F6231D204777120092672B /* HashTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F62316204777110092672B /* HashTag.swift */; };
 		87F6231E204777120092672B /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F62317204777110092672B /* Location.swift */; };
@@ -57,9 +64,7 @@
 		87F62325204777340092672B /* RealmService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F62324204777340092672B /* RealmService.swift */; };
 		87F736D32127E52E0065AB9D /* DownloadListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736D22127E52E0065AB9D /* DownloadListViewController.swift */; };
 		87F736E02128E6980065AB9D /* PhotoManagerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736DF2128E6980065AB9D /* PhotoManagerUITests.swift */; };
-		87F736E821290C2E0065AB9D /* DownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736E721290C2E0065AB9D /* DownloadManager.swift */; };
-		87F736ED212A5BB70065AB9D /* UploadingAlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */; };
-		87F736F3212D05260065AB9D /* GettingFirebaseData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F2212D05260065AB9D /* GettingFirebaseData.swift */; };
+		87F736ED212A5BB70065AB9D /* UploadingOneImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736EB212A5BB60065AB9D /* UploadingOneImageView.swift */; };
 		87F736F5212D29DB0065AB9D /* AlertDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F4212D29DB0065AB9D /* AlertDialog.swift */; };
 		87F736F7212E73AE0065AB9D /* EmailCheckingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */; };
 		87F736F9212E778E0065AB9D /* FirebaseAuthUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F736F8212E778E0065AB9D /* FirebaseAuthUtility.swift */; };
@@ -104,7 +109,6 @@
 		875E034020616E29002E9D8A /* Reachability.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
 		877F22B02130DA0200617C2C /* TypeList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeList.swift; sourceTree = "<group>"; };
 		877F22B22131514300617C2C /* CascadeDeleting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CascadeDeleting.swift; sourceTree = "<group>"; };
-		87A2E8B9206599F600D5304C /* BarChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarChart.swift; sourceTree = "<group>"; };
 		87A2E8BD206690A700D5304C /* SettingTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingTableViewController.swift; sourceTree = "<group>"; };
 		87B476E620572F800091AF8F /* FolderTypeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTypeViewController.swift; sourceTree = "<group>"; };
 		87B476E82057371D0091AF8F /* FolderTypeCellCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTypeCellCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -121,9 +125,17 @@
 		87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderTypeListTableViewCell.swift; sourceTree = "<group>"; };
 		87D605C420644AAD0011566D /* FolderListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListViewController.swift; sourceTree = "<group>"; };
 		87D605C6206456EC0011566D /* FolderListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FolderListTableViewCell.swift; sourceTree = "<group>"; };
-		87D71A352149C888001F0F32 /* ItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemViewController.swift; sourceTree = "<group>"; };
-		87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePageViewViewController.swift; sourceTree = "<group>"; };
+		87D71A352149C888001F0F32 /* ImageSliderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSliderView.swift; sourceTree = "<group>"; };
+		87D71A39214A1BF2001F0F32 /* ImagePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePageView.swift; sourceTree = "<group>"; };
 		87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIStoryboard+ViewController.swift"; sourceTree = "<group>"; };
+		87D71A3D214C8970001F0F32 /* SharingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharingService.swift; sourceTree = "<group>"; };
+		87D71A3F214D6A5E001F0F32 /* UploadingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadingService.swift; sourceTree = "<group>"; };
+		87D71A43214E35E7001F0F32 /* DownloadTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadTableViewCell.swift; sourceTree = "<group>"; };
+		87D71A45214F8106001F0F32 /* DownloadService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DownloadService.swift; sourceTree = "<group>"; };
+		87D71A47214FCE19001F0F32 /* ImageArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageArray.swift; sourceTree = "<group>"; };
+		87D71A49214FDBB1001F0F32 /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
+		87D71A4B21509343001F0F32 /* UserDefaultService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultService.swift; sourceTree = "<group>"; };
+		87EC5E8B2152D0D100F2F81F /* StatisticsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsService.swift; sourceTree = "<group>"; };
 		87ECF9FE206165D800E3671F /* NavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationViewController.swift; sourceTree = "<group>"; };
 		87F62316204777110092672B /* HashTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HashTag.swift; sourceTree = "<group>"; };
 		87F62317204777110092672B /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -135,9 +147,7 @@
 		87F736DD2128E6980065AB9D /* PhotoManagerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoManagerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		87F736DF2128E6980065AB9D /* PhotoManagerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManagerUITests.swift; sourceTree = "<group>"; };
 		87F736E12128E6980065AB9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		87F736E721290C2E0065AB9D /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadManager.swift; sourceTree = "<group>"; };
-		87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadingAlertView.swift; sourceTree = "<group>"; };
-		87F736F2212D05260065AB9D /* GettingFirebaseData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GettingFirebaseData.swift; sourceTree = "<group>"; };
+		87F736EB212A5BB60065AB9D /* UploadingOneImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadingOneImageView.swift; sourceTree = "<group>"; };
 		87F736F4212D29DB0065AB9D /* AlertDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertDialog.swift; sourceTree = "<group>"; };
 		87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailCheckingViewController.swift; sourceTree = "<group>"; };
 		87F736F8212E778E0065AB9D /* FirebaseAuthUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAuthUtility.swift; sourceTree = "<group>"; };
@@ -190,9 +200,11 @@
 				87D50A49205B5A0F00AA1658 /* ImageSearchCell.swift */,
 				87D605C02064377C0011566D /* FolderTypeListTableViewCell.swift */,
 				87D605C6206456EC0011566D /* FolderListTableViewCell.swift */,
-				87A2E8B9206599F600D5304C /* BarChart.swift */,
-				87F736EB212A5BB60065AB9D /* UploadingAlertView.swift */,
 				8737ABB12148868800C68BB6 /* InformationPropertyView.swift */,
+				87D71A352149C888001F0F32 /* ImageSliderView.swift */,
+				87D71A39214A1BF2001F0F32 /* ImagePageView.swift */,
+				87F736EB212A5BB60065AB9D /* UploadingOneImageView.swift */,
+				87D71A43214E35E7001F0F32 /* DownloadTableViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -240,23 +252,21 @@
 		8753C9202049DA3900A08FDB /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				87B476E620572F800091AF8F /* FolderTypeViewController.swift */,
-				87B7E9B42058848800E2678A /* FolderViewController.swift */,
-				87B7E9B820589E0F00E2678A /* ImageViewController.swift */,
-				87F736D22127E52E0065AB9D /* DownloadListViewController.swift */,
-				8703A2D92052DD4E00A9AE04 /* ImageDetailsViewController.swift */,
-				87D50A47205B567700AA1658 /* ImageSearchViewController.swift */,
-				87D50A4B20601FC100AA1658 /* MapViewController.swift */,
-				87ECF9FE206165D800E3671F /* NavigationViewController.swift */,
 				87D605BE2064320F0011566D /* FolderTypeListViewController.swift */,
 				87D605C420644AAD0011566D /* FolderListViewController.swift */,
-				87A2E8BD206690A700D5304C /* SettingTableViewController.swift */,
+				87B476E620572F800091AF8F /* FolderTypeViewController.swift */,
+				87B7E9B42058848800E2678A /* FolderViewController.swift */,
+				8703A2D92052DD4E00A9AE04 /* ImageDetailsViewController.swift */,
+				87F736D22127E52E0065AB9D /* DownloadListViewController.swift */,
 				87BBA028206707F9003E5771 /* StatisticsTableViewController.swift */,
+				87D50A4B20601FC100AA1658 /* MapViewController.swift */,
+				87B7E9B820589E0F00E2678A /* ImageViewController.swift */,
+				87D50A47205B567700AA1658 /* ImageSearchViewController.swift */,
+				87ECF9FE206165D800E3671F /* NavigationViewController.swift */,
+				87A2E8BD206690A700D5304C /* SettingTableViewController.swift */,
 				8743CB7921277BE200B870BB /* AuthenticationViewController.swift */,
 				87F736F6212E73AE0065AB9D /* EmailCheckingViewController.swift */,
 				87F736FA212E7DCB0065AB9D /* PasswordResetingViewController.swift */,
-				87D71A352149C888001F0F32 /* ItemViewController.swift */,
-				87D71A39214A1BF2001F0F32 /* ImagePageViewViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -270,6 +280,7 @@
 				87F62319204777120092672B /* Image.swift */,
 				87F62316204777110092672B /* HashTag.swift */,
 				87F62317204777110092672B /* Location.swift */,
+				87D71A47214FCE19001F0F32 /* ImageArray.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -277,24 +288,28 @@
 		87F623262047773D0092672B /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				87F736E721290C2E0065AB9D /* DownloadManager.swift */,
 				87F62324204777340092672B /* RealmService.swift */,
 				875E034020616E29002E9D8A /* Reachability.swift */,
-				87F736F2212D05260065AB9D /* GettingFirebaseData.swift */,
 				87F736F4212D29DB0065AB9D /* AlertDialog.swift */,
 				87F736F8212E778E0065AB9D /* FirebaseAuthUtility.swift */,
 				877F22B22131514300617C2C /* CascadeDeleting.swift */,
 				874ECC482138D9BA001AF1C1 /* SearchBarService.swift */,
 				874ECC4A213A2C22001AF1C1 /* ToolBarService.swift */,
 				874ECC4C213B3D86001AF1C1 /* TabBarService.swift */,
-				874ECC4E213B3FBA001AF1C1 /* CollectionViewService.swift */,
 				874ECC50213B8DE0001AF1C1 /* TransitionToOtherViewService.swift */,
 				874ECC52213B9CB5001AF1C1 /* NavigationService.swift */,
 				874ECC56213CC193001AF1C1 /* StringService.swift */,
 				874ECC58213F01DE001AF1C1 /* CameraService.swift */,
 				87CCE49921445F0B003F82AD /* LocationService.swift */,
 				8737ABAF21487D9500C68BB6 /* DemoDataService.swift */,
+				874ECC4E213B3FBA001AF1C1 /* CollectionViewService.swift */,
 				87D71A3B214ABFC2001F0F32 /* UIStoryboard+ViewController.swift */,
+				87D71A3D214C8970001F0F32 /* SharingService.swift */,
+				87D71A3F214D6A5E001F0F32 /* UploadingService.swift */,
+				87D71A45214F8106001F0F32 /* DownloadService.swift */,
+				87D71A49214FDBB1001F0F32 /* FirebaseService.swift */,
+				87D71A4B21509343001F0F32 /* UserDefaultService.swift */,
+				87EC5E8B2152D0D100F2F81F /* StatisticsService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -493,7 +508,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				87A2E8BE206690A700D5304C /* SettingTableViewController.swift in Sources */,
-				87F736E821290C2E0065AB9D /* DownloadManager.swift in Sources */,
 				87F736F9212E778E0065AB9D /* FirebaseAuthUtility.swift in Sources */,
 				8703A2DA2052DD4E00A9AE04 /* ImageDetailsViewController.swift in Sources */,
 				87B476E92057371D0091AF8F /* FolderTypeCellCollectionViewCell.swift in Sources */,
@@ -508,17 +522,23 @@
 				87CCE49A21445F0B003F82AD /* LocationService.swift in Sources */,
 				8737ABB22148868800C68BB6 /* InformationPropertyView.swift in Sources */,
 				87D50A4C20601FC100AA1658 /* MapViewController.swift in Sources */,
+				87D71A3E214C8970001F0F32 /* SharingService.swift in Sources */,
 				87F736FB212E7DCB0065AB9D /* PasswordResetingViewController.swift in Sources */,
 				87D50A48205B567700AA1658 /* ImageSearchViewController.swift in Sources */,
+				87D71A4A214FDBB1001F0F32 /* FirebaseService.swift in Sources */,
 				874ECC57213CC193001AF1C1 /* StringService.swift in Sources */,
 				87D605C7206456EC0011566D /* FolderListTableViewCell.swift in Sources */,
 				87B476E720572F800091AF8F /* FolderTypeViewController.swift in Sources */,
 				87D605C12064377C0011566D /* FolderTypeListTableViewCell.swift in Sources */,
+				87D71A44214E35E7001F0F32 /* DownloadTableViewCell.swift in Sources */,
+				87D71A48214FCE19001F0F32 /* ImageArray.swift in Sources */,
 				87F736F5212D29DB0065AB9D /* AlertDialog.swift in Sources */,
 				87F6231E204777120092672B /* Location.swift in Sources */,
 				8753C90D2047735C00A08FDB /* AppDelegate.swift in Sources */,
+				87D71A40214D6A5E001F0F32 /* UploadingService.swift in Sources */,
 				87F736F7212E73AE0065AB9D /* EmailCheckingViewController.swift in Sources */,
-				87D71A3A214A1BF2001F0F32 /* ImagePageViewViewController.swift in Sources */,
+				87EC5E8C2152D0D100F2F81F /* StatisticsService.swift in Sources */,
+				87D71A3A214A1BF2001F0F32 /* ImagePageView.swift in Sources */,
 				87ECF9FF206165D800E3671F /* NavigationViewController.swift in Sources */,
 				87BBA029206707F9003E5771 /* StatisticsTableViewController.swift in Sources */,
 				87F736D32127E52E0065AB9D /* DownloadListViewController.swift in Sources */,
@@ -526,9 +546,9 @@
 				87F62321204777120092672B /* Type.swift in Sources */,
 				87F62322204777120092672B /* Folder.swift in Sources */,
 				8737ABB021487D9500C68BB6 /* DemoDataService.swift in Sources */,
-				87A2E8BA206599F600D5304C /* BarChart.swift in Sources */,
 				877F22B32131514300617C2C /* CascadeDeleting.swift in Sources */,
-				87D71A362149C888001F0F32 /* ItemViewController.swift in Sources */,
+				87D71A4C21509344001F0F32 /* UserDefaultService.swift in Sources */,
+				87D71A362149C888001F0F32 /* ImageSliderView.swift in Sources */,
 				87B7E9B52058848800E2678A /* FolderViewController.swift in Sources */,
 				8743CB7A21277BE200B870BB /* AuthenticationViewController.swift in Sources */,
 				874ECC4F213B3FBA001AF1C1 /* CollectionViewService.swift in Sources */,
@@ -538,11 +558,11 @@
 				874ECC492138D9BA001AF1C1 /* SearchBarService.swift in Sources */,
 				877F22B12130DA0300617C2C /* TypeList.swift in Sources */,
 				87B7E9B72058868A00E2678A /* FolderCollectionViewCell.swift in Sources */,
-				87F736F3212D05260065AB9D /* GettingFirebaseData.swift in Sources */,
-				87F736ED212A5BB70065AB9D /* UploadingAlertView.swift in Sources */,
+				87F736ED212A5BB70065AB9D /* UploadingOneImageView.swift in Sources */,
 				874ECC51213B8DE0001AF1C1 /* TransitionToOtherViewService.swift in Sources */,
 				87B7E9B920589E0F00E2678A /* ImageViewController.swift in Sources */,
 				87D71A3C214ABFC2001F0F32 /* UIStoryboard+ViewController.swift in Sources */,
+				87D71A46214F8106001F0F32 /* DownloadService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

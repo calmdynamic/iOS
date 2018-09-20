@@ -22,6 +22,8 @@ class ImageSearchViewController: UIViewController, UISearchBarDelegate{
     }()
     let searchController = UISearchController(searchResultsController: nil)
     
+    var newFolder: Folder = Folder()
+    
     var selectedImage: Image!
     let segueIdentfier = "imageDetailSegue"
     @IBOutlet weak var collectionView: UICollectionView!
@@ -48,6 +50,7 @@ class ImageSearchViewController: UIViewController, UISearchBarDelegate{
             self.selectedImage = self.foundImages[indexpaths![0].item]
 
             imageDetailVC.currentImage = self.selectedImage
+            imageDetailVC.selectedFolder = self.newFolder
 
         }
         
@@ -66,9 +69,9 @@ extension ImageSearchViewController: UICollectionViewDataSource{
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: self.identifier, for: indexPath) as! ImageSearchCell
        
         //to be fixed
-        //let image = UIImage(data: (self.foundImages[indexPath.item].getImageBinaryData()) as Data, scale:1.0)
+        let image = UIImage(data: (self.foundImages[indexPath.item].getImageBinaryData()) as Data, scale:1.0)
         
-        //cell.photoImage.image = image
+        cell.photoImage.image = image
         
         return cell
     }
@@ -144,6 +147,7 @@ extension ImageSearchViewController: UICollectionViewDelegate{
                 if(found){
                     self.foundImages.append(i)
                     
+                    self.newFolder.addElementToImageArray(image: i)
                     found = false
                 }
             }

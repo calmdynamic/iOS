@@ -23,12 +23,12 @@ class Type: Object{
     }
     
     
-    convenience init(name: String, folders: List<Folder>, folderCount: Int){
+    convenience init(name: String, folders: List<Folder>){
         self.init()
         self.name = name
         self.folders = folders
         self.dateCreated = Date()
-        self.folderCount = folderCount
+        //self.folderCount = folderCount
         
        
     }
@@ -43,14 +43,19 @@ class Type: Object{
         self.folders = folders
     }
     
-//    public func setFolder(_ folders: [Folder]){
-//        self.folders = folders
-//    }
-    
+
     public func getFolderCount() -> Int{
         return self.folderCount
     }
     
+    public func getImageCount() -> Int{
+        var count = 0
+        for i in self.getFolders(){
+            count = count + i.getImageCount()
+        }
+        return count
+        
+    }
     
     public func getDateCreated() -> Date{
         return self.dateCreated
@@ -66,6 +71,34 @@ class Type: Object{
     
     public func getFolders() -> List<Folder>{
         return self.folders
+    }
+    
+    func getNumOfEmptyFolder()->Int{
+        var count = 0
+        
+        for i in self.folders{
+            if i.getImageCount() == 0{
+                count = count + 1
+            }
+            
+        }
+        return count
+    }
+    
+    func getNumOfRemainingFolder()->Int{
+        var count = 0
+        
+        for i in self.folders{
+            if i.getImageCount() != 0{
+                count = count + 1
+            }
+            
+        }
+        if self.getFolderCount() == count{
+            return 0
+        }else{
+            return count
+        }
     }
     
     public func addToRealm(){
@@ -124,6 +157,18 @@ class Type: Object{
         return self.ascSort
     }
     
+    func decrementFolderCount(){
+        try! self.realm?.write {
+            self.folderCount = folderCount - 1
+        }
+    }
+    
+    func incrementFolderCount(){
+        try! self.realm?.write {
+            self.folderCount = folderCount + 1
+        }
+    }
+    
     public func addFoldersToRealm(folderName: String){
         var folders: List<Folder>
         if self.folders.isEmpty{
@@ -136,8 +181,8 @@ class Type: Object{
             
         }
         let newImages = List<Image>()
-        let newFolder = Folder(name: folderName, createdDate: Date() ,images: newImages, imageCount: newImages.count, categoryName: self.name)
-        
+        let newFolder = Folder(name: folderName, createdDate: Date() ,images: newImages, categoryName: self.name)
+        incrementFolderCount()
         folders.append(newFolder)
         
         RealmService.shared.update(self, with: ["name": name, "folderCount": folders.count, "folders": folders])
@@ -163,6 +208,9 @@ class Type: Object{
         }
     }
     
+    
+    
+    
     func deleteFolderFromRealm(indexpaths: [IndexPath]){
         var deletedFolders:[Folder] = []
         for item  in indexpaths {
@@ -170,7 +218,14 @@ class Type: Object{
             
             let folder = folderArray[item.row]
             
+            decrementFolderCount()
+            
             deletedFolders.append(folder)
+        }
+        
+        
+        for i in deletedFolders{
+            i.deleteImageFromFileDirectory(deletedImages: i.getImages())
         }
         
         guard let database = try? Realm() else { return }
@@ -182,16 +237,7 @@ class Type: Object{
             // handle write error here
         }
         
-//        let tempFolderType = RealmService.shared.realm.objects(Type.self).filter("name = %@", self.navigationItem.title ?? "")
-        
-        
-//
-//        let tempFolders = tempFolderType[0].getFolders()
-//
-//        self.folderArray = [Folder]()
-//        for i in tempFolders{
-//            self.folderArray.append(i)
-//        }
+
         self.folderArray = Array(self.folders)
     }
     

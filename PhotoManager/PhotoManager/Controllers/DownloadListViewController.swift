@@ -10,35 +10,36 @@ import UIKit
 import Firebase
 import RealmSwift
 import FirebaseAuth
+import SDWebImage
 
 class DownloadListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var doneBtn: UIBarButtonItem!
-    
-    
+    @IBOutlet weak var noDataAvailableLabel: UILabel!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
+    
+    @IBOutlet weak var filterBtn: UIBarButtonItem!
+    
+    @IBOutlet weak var segmentedBtn: UISegmentedControl!
+    
+    var folderTypeListView = FolderTypeListViewController()
     var selectedFolderTypeName: String!
     var selectedFolder: Folder!
-   // var location: Location!
-    var currentKey:String!
-    var currentID:String!
+    var imagesArray: ImageArray!
     
-    var imagesURL: [String]!
-    //var images: [UIImage]!
-    var imagesArray: [Image]!
+    var newFolderType: String! = ""
+    var newFolder:  String! = ""
     let ref = Database.database().reference()
-    let identifier = "folderListCell"
-    
     
     override func viewWillAppear(_ animated: Bool) {
-       //images = [UIImage]()
-        imagesArray = [Image]()
-        imagesURL = [String]()
-       // self.activityIndicator.startAnimating()
-        fetechData2()
+        imagesArray = ImageArray()
+        //fetechAllData()
+        DownloadService.fetechSpecificData(imagesArray: self.imagesArray, activityIndicator: self.activityIndicator, tableView: self.tableView, noDataAvailableLabel: self.noDataAvailableLabel, newFolderType: self.newFolderType, newFolder: self.newFolder, controller: self)
         self.tabBarController?.tabBar.isHidden = true
-
+        //navigationItem.title = self.selectedFolderTypeName
+        self.segmentedBtn.selectedSegmentIndex = 1
+        
+        
     }
     
     
@@ -46,201 +47,44 @@ class DownloadListViewController: UIViewController {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
-    }
-    
-    @IBAction func doneBtn(_ sender: UIBarButtonItem) {
-        self.tableView.reloadData()
-        //self.dismiss(animated: true, completion: nil)
-    }
-    
-    
-    
-    func fetechData2()
-    {
         
-        if self.currentKey == nil{
-            var userEmail: String = (Auth.auth().currentUser?.email)!
-            userEmail = userEmail.replacingOccurrences(of: ".", with: ",")
+        self.newFolderType = self.selectedFolder.getCategoryName()
+        self.newFolder = self.selectedFolder.getName()
+    }
+    
+    @IBAction func didUnwindFromFolderList(segue: UIStoryboardSegue){
+        let folderList = segue.source as! FolderListViewController
+        newFolderType = folderList.selectedFolderType.getName()
+        newFolder = folderList.selectedFolder.getName()
+        
+    }
+    
+    
+    @IBAction func segmentedControlBtn(_ sender: Any) {
+        
+        switch self.segmentedBtn.selectedSegmentIndex
+        {
+        case 0:
+            print("0")
+            self.imagesArray.setCurrentID(currentID: "")
+            self.imagesArray.setCurrentKey(currentKey: "")
+            self.imagesArray.emptyArray()
+            DownloadService.fetechAllData(imagesArray: self.imagesArray, activityIndicator: self.activityIndicator, tableView: self.tableView, noDataAvailableLabel: self.noDataAvailableLabel, controller: self)
+            self.filterBtn.isEnabled = false
             
-            Database.database().reference().child(userEmail).queryOrdered(byChild: "imageID").queryLimited(toLast: 12).observeSingleEvent(of: .value) { (snap:DataSnapshot) in
-                
-                
-                
-                if snap.childrenCount > 0 {
-                    
-                    let first = snap.children.allObjects.first as! DataSnapshot
-                    
-                    for s in snap.children.allObjects as! [DataSnapshot]{
-                        let item = s.value as! Dictionary<String,AnyObject?>
-                        
-                        self.getDataFromFirebase(item, 0)
-                    }
-                    
-                    self.currentKey = first.key
-                    
-                    self.currentID = first.childSnapshot(forPath: "imageID").value as! String
-                    
-                    self.tableView.reloadData()
-                }
-            }
-        }else{
-            var userEmail: String = (Auth.auth().currentUser?.email)!
-            userEmail = userEmail.replacingOccurrences(of: ".", with: ",")
+        case 1:
+            print("1")
+            self.imagesArray.setCurrentID(currentID: "")
+            self.imagesArray.setCurrentKey(currentKey: "")
+            self.imagesArray.emptyArray()
+            DownloadService.fetechSpecificData(imagesArray: self.imagesArray, activityIndicator: self.activityIndicator, tableView: self.tableView, noDataAvailableLabel: self.noDataAvailableLabel, newFolderType: self.newFolderType, newFolder: self.newFolder, controller: self)
+            self.filterBtn.isEnabled = true
             
-            Database.database().reference().child(userEmail).queryOrdered(byChild: "imageID").queryEnding(atValue: self.currentID).queryLimited(toLast: 5).observeSingleEvent(of: .value , with: { (snap:DataSnapshot) in
-                
-                
-                let index = self.imagesURL.count
-                
-                if snap.childrenCount > 0 {
-                    
-                    let first = snap.children.allObjects.first as! DataSnapshot
-                    
-                    for s in snap.children.allObjects as! [DataSnapshot]{
-                        
-                        if s.key != self.currentKey{
-                            let item = s.value as! Dictionary<String,AnyObject?>
-                            
-                            self.getDataFromFirebase(item, index)
-                            
-                        }
-                        
-                    }
-                    
-                    self.currentKey = first.key
-                    self.currentID = first.childSnapshot(forPath: "imageID").value as! String
-                    
-                    self.tableView.reloadData()
-                }
-                
-            })
+        default:
+            break
         }
-        }
-    
-   
-    func getDataFromFirebase(_ item : Dictionary<String,AnyObject?>, _ index : Int){
-        
-        
-        let userImageID = item["imageID"] as? String
-        
-        let userHashtag = item["Hashtag"] as? [String: String]
-        
-        //print("hashtag")
-        //print(GettingFirebaseData.getHashTagDataFromFirebase(userHashtag!).description)
-        
-        let userLocation = item["location"] as? NSDictionary
-        
-        //print("location")
-        //print(GettingFirebaseData.getLocationDataFromFirebase(userLocation!).description)
-        let userDate = item["dateCreated"] as? NSDictionary
-        //print("date")
-        //print(GettingFirebaseData.getImageCreatedDateFromFirebase(userDate!))
-        
-        let imageURL = item["imageURL"] as? String
-        self.handledDownload(imageURL!, userImageID!, GettingFirebaseData.getImageCreatedDateFromFirebase(userDate!),GettingFirebaseData.getLocationDataFromFirebase(userLocation!), GettingFirebaseData.getHashTagDataFromFirebase(userHashtag!))
-        self.imagesURL.insert(imageURL!, at: index)
         
     }
-    
-    
-    //MARK: - IBActions
-    func handledDownload(_ newURL: String,_ imageID: String , _ date: Date,_ location: Location,_ hashtags: List<HashTag> ) {
-        self.activityIndicator.startAnimating()
-        //self.downloadingInProgress = true
-        guard let url = URL(string: newURL) else {
-            print("Unable to create URL")
-            return
-        }
-        //Ask the download manager to download an image and return it as Data
-        DownloadManager.downloadManager.downloadFileAtURL(activityIndicator,
-            url,
-            
-            //This is the code to execute when the data is available
-            //(or the network request fails)
-            completion: {
-                [weak self] //Create a capture group for self to avoid a retain cycle.
-                data, error in
-                
-                //If self is not nil, unwrap it as "strongSelf". If self IS nil, bail out.
-                guard let strongSelf = self else {
-                    return
-                }
-                
-                if let error = error {
-                    print("download failed. message = \(error.localizedDescription)")
-                    self?.activityIndicator.stopAnimating()
-                    return
-                }
-
-                
-                guard let data = data else {
-                    print("Data is nil!")
-                    self?.activityIndicator.stopAnimating()
-                    return
-                }
-                
-                guard let image = UIImage(data: data) else {
-                    print("Unable to load image from data")
-                    self?.activityIndicator.stopAnimating()
-                    return
-                }
-                
-                self?.activityIndicator.startAnimating()
-                print("33333")
-
-                self?.imagesArray.append(Image(imageID: imageID, dateCreated: date, image: image, hashTags: hashtags, location: location))
-
-                self?.tableView.reloadData()
-
-                    self?.activityIndicator.stopAnimating()
-
-                
-            }
-        )
-    }
-    
-    func deleteFirebaseImage(indexPath: IndexPath){
-       
-        print(self.imagesArray[indexPath.item])
-        var userEmail: String = (Auth.auth().currentUser?.email)!
-        userEmail = userEmail.replacingOccurrences(of: ".", with: ",")
-        Database.database().reference().child(userEmail).child(self.imagesArray[indexPath.item].getImageID()).setValue(nil){
-            error,_  in
-            if error != nil {
-                print("error \(String(describing: error))")
-            }
-        }
-        Storage.storage().reference().child(self.imagesArray[indexPath.item].getImageID()+".png").delete { error in
-            if error != nil{
-                AlertDialog.showAlertMessage(controller: self, title: "Message", message: "Deleted Unsuccessfully", btnTitle: "Ok")
-                
-            }else{
-                AlertDialog.showAlertMessage(controller: self, title: "Message", message: "Deleted Successfully", btnTitle: "Ok")
-            }
-        }
-        self.imagesArray.remove(at: indexPath.item)
-        self.tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
-        //self.tableView!.reloadData()
-        
-    }
-    
-    
-    
-    func saveDownloadedImage(indexPath: IndexPath){
-        
-        //to be fixed
-        //selectedFolder.addImageToRealm(newImage: self.imagesArray[indexPath.item].getUIImage(), location: self.imagesArray[indexPath.item].getLocation())
-            //UtilityService.shared.addImageToDatabase(selectedFolder: selectedFolder, selectedFolderType: self.selectedFolderTypeName, newImage: self.imagesArray[indexPath.item].getUIImage(), location: self.location)
-        
-        //if realmImage != nil
-        //{
-            AlertDialog.showAlertMessage(controller: self, title: "Message", message: "Saved Successfully", btnTitle: "Ok")
-        //}
-        
-    }
-    
-
-    
     
     
 }
@@ -248,63 +92,48 @@ class DownloadListViewController: UIViewController {
 
 extension DownloadListViewController: UITableViewDataSource{
     
-    func numberOfSections(in tableView: UITableView) -> Int
-    {
-        var numOfSections: Int = 0
-        if self.imagesArray.count > 0
-        {
-            tableView.separatorStyle = .singleLine
-            numOfSections            = 1
-            tableView.backgroundView = nil
-        }
-        else
-        {
-            let noDataLabel: UILabel     = UILabel(frame: CGRect(x: 0, y: 0, width: tableView.bounds.size.width, height: tableView.bounds.size.height))
-            noDataLabel.text          = "No data available"
-            noDataLabel.textColor     = UIColor.black
-            noDataLabel.textAlignment = .center
-            tableView.backgroundView  = noDataLabel
-            tableView.separatorStyle  = .none
-        }
-        return numOfSections
-    }
-    
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-   
-        return self.imagesArray.count
+        
+        return self.imagesArray.getTotalSize()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: self.identifier, for: indexPath) as! FolderListTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: DownloadTableViewCell.IDENTIFIER, for: indexPath) as! DownloadTableViewCell
         
-        //cell.folderListLabel.text = self.folders[indexPath.item].getName()
-        //to be fixed
-        //cell.folderListImage.image = self.imagesArray[indexPath.item].getUIImage()
+        let image = self.imagesArray.getImageFromArray(index: indexPath.item)
+        
+        cell.imagePicture.sd_setImage(with: image.getImageURL(), placeholderImage: #imageLiteral(resourceName: "Placeholder"))
+        
+        cell.imageTitle.text = "{\(image.getCategoryName())} | [\(image.getSubcategoryName())]"
+        
+        cell.dateAndTime.text =
+        "Created Time: \(image.getImageCreatedDateString()) \(image.getImageCreatedTimeString())"
+        
+        cell.locationText.text = image.getLocation().getAddressString()
+        
+        cell.uploadedTime.text =  "Uploaded Time: \(image.getUploadedDateString()) \(image.getUploadedTimeString())"
+        
         
         return cell
     }
-
+    
+    
     
 }
 extension DownloadListViewController: UITableViewDelegate{
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //self.selectedFolder = self.folders[indexPath.item]
-        doneBtn.isEnabled = true
-    }
     
     func tableView(_ tableView: UITableView, editActionsForRowAt: IndexPath) -> [UITableViewRowAction]? {
+        
         let delete = UITableViewRowAction(style: .normal, title: "Delete") { action, index in
             print("more button tapped")
-            self.deleteFirebaseImage(indexPath: index)
+            FirebaseService.deleteFirebaseImage(controller: self, tableView: self.tableView, indexPath: index, imageArray: self.imagesArray, noDataAvailableLabel: self.noDataAvailableLabel)
         }
         delete.backgroundColor = .red
         
         let save = UITableViewRowAction(style: .normal, title: "Save") { action, index in
             print("favorite button tapped")
-            self.saveDownloadedImage(indexPath: index)
-            //index.item
+            DownloadService.saveDownloadedImage(selectedFolder: self.selectedFolder, imageArray: self.imagesArray, tableView: self.tableView, controller: self, indexPath: index)
         }
         save.backgroundColor = .orange
         
@@ -315,14 +144,31 @@ extension DownloadListViewController: UITableViewDelegate{
         return true
     }
     
-    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
-        let currentOffset = scrollView.contentOffset.y
-        let maxOffset = scrollView.contentSize.height - scrollView.frame.size.height
+    
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        self.activityIndicator.isHidden = false
+        self.activityIndicator.startAnimating()
         
-        if maxOffset - currentOffset <= 40{
-            self.fetechData2()
+    }
+    
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        self.activityIndicator.isHidden = true
+        self.activityIndicator.stopAnimating()
+        
+        
+        
+        switch self.segmentedBtn.selectedSegmentIndex
+        {
+        case 0:
+            DownloadService.fetechAllData(imagesArray: self.imagesArray, activityIndicator: self.activityIndicator, tableView: self.tableView, noDataAvailableLabel: self.noDataAvailableLabel, controller: self)
+        case 1:
+            DownloadService.fetechSpecificData(imagesArray: self.imagesArray, activityIndicator: self.activityIndicator, tableView: self.tableView, noDataAvailableLabel: self.noDataAvailableLabel, newFolderType: self.newFolderType, newFolder: self.newFolder, controller: self)
+        default:
+            break
         }
     }
+    
     
     
 }

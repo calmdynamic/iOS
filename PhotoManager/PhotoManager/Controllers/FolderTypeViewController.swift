@@ -114,14 +114,25 @@ extension FolderTypeViewController: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: FolderTypeCellCollectionViewCell.IDENTIFIER, for: indexPath) as! FolderTypeCellCollectionViewCell
         
+        
+        
         let folderNmaeString = self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getName()
         cell.folderTypeLabel.text = folderNmaeString
         
         let numOfFolders = self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getFolders().count
+        
+//        if cell.folderTypeLabel.text != "Default"{
+//            cell.folderTypeImage.image = #imageLiteral(resourceName: "folder_Category")
+//        }else
+//
         if cell.folderTypeLabel.text == "Default"{
+            
+            cell.folderTypeImage.image = #imageLiteral(resourceName: "folder_Details")
+            
             cell.numOfFolders.text = "\(self.folderTypes.getOneFolderTypeByIndedx(index: indexPath.item).getFolders()[0].getImageCount())"
         }else{
             cell.numOfFolders.text = numOfFolders == 0 ? "Empty" : "\(numOfFolders)"
+            cell.folderTypeImage.image = #imageLiteral(resourceName: "folder_Category")
         }
         
         cell.cellImageWhenSettingPropertyAndScrollingRecreating(isEditing: isEditing)
