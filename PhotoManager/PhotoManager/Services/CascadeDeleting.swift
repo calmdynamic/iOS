@@ -49,13 +49,3 @@ private extension Realm {
     }
 }
 
-//guard let database = try? Realm() else { return }
-//                    // to delete Result<ContactEntity>
-//                    //let contacts = database.objects(Type.self)
-//                    do {
-//                        try database.write {
-//                            database.delete(folderType, cascading: true)
-//                        }
-//                    } catch {
-//                        // handle write error here
-//                    }

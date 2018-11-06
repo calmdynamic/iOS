@@ -256,6 +256,7 @@ extension ImageViewController: UICollectionViewDataSource{
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageCollectionViewCell.IDENTIFIER, for: indexPath) as! ImageCollectionViewCell
 
         let image = self.selectedFolder.getImageArray()[indexPath.item].loadImageFromPath()
+        
 
         cell.photoImage.image = Image.compressImage(image!, maxWidth: 120, quality: 0.5)
 

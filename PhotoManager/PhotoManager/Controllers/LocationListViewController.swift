@@ -92,9 +92,10 @@ extension LocationListViewController: UITableViewDelegate{
         }
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
-        
-        for i in indexpaths!{
-            self.selectedLocation.append(self.locations[i.item])
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedLocation.append(self.locations[i.item])
+            }
         }
     }
     
@@ -111,8 +112,10 @@ extension LocationListViewController: UITableViewDelegate{
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
         
-        for i in indexpaths!{
-            self.selectedLocation.append(self.locations[i.item])
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedLocation.append(self.locations[i.item])
+            }
         }
     }
     

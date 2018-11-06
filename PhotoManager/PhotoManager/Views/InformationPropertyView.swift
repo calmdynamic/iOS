@@ -102,7 +102,9 @@ class InformationPropertyView: UIViewController, MKMapViewDelegate {
 
         }else{
         
+           
         self.initailizeMapView(image: image)
+            
         self.initailizeImageTypeName(image: image)
         self.initailizeImageFolderName(image: image)
         self.initailizeAddress(image: image)
@@ -171,6 +173,7 @@ class InformationPropertyView: UIViewController, MKMapViewDelegate {
     private func initailizeMapView(image: Image){
 
 
+        if image.getLocation().getLatitude() != 0 && image.getLocation().getLongtitude() != 0{
             let regionRadius: CLLocationDistance = 30000
             
             let initialLocation = CLLocation(latitude: image.getLocation().getLatitude(), longitude: image.getLocation().getLongtitude())
@@ -187,6 +190,10 @@ class InformationPropertyView: UIViewController, MKMapViewDelegate {
             annotation.coordinate = initialLocation.coordinate
             annotation.title = "Spot"
             mapView.addAnnotation(annotation)
+        }
+        }else{
+            self.mapView.removeFromSuperview()
+            self.mapDataUnavailable.isHidden = false
         }
 
     }

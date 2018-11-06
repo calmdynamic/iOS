@@ -94,10 +94,12 @@ extension DateCreatedListViewController: UITableViewDelegate{
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
         
-        for i in indexpaths!{
-            self.selectedCreatedDate.append(self.createdDates[i.item])
-            print("p")
-            print(self.selectedCreatedDate)
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedCreatedDate.append(self.createdDates[i.item])
+                print("p")
+                print(self.selectedCreatedDate)
+            }
         }
     }
     
@@ -115,10 +117,12 @@ extension DateCreatedListViewController: UITableViewDelegate{
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
         
-        for i in indexpaths!{
-            self.selectedCreatedDate.append(self.createdDates[i.item])
-            print("p")
-            print(self.selectedCreatedDate)
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedCreatedDate.append(self.createdDates[i.item])
+                print("p")
+                print(self.selectedCreatedDate)
+            }
         }
     }
     

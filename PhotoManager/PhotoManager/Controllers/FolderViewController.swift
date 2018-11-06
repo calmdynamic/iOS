@@ -40,9 +40,6 @@ class FolderViewController: UIViewController, UISearchBarDelegate, UITextFieldDe
     override func viewDidLoad() {
         super.viewDidLoad()
         
-//        CollectionViewService.setupCollectionViewInsets(collectionView: self.collectionView)
-//        CollectionViewService.setupLayout(collectionView: self.collectionView, controller: self, cellPadding: 0, numberOfColumns: 3)
-        
         NavigationService.initNavigationItem(title: folderType.getName(), navigationItem: navigationItem, editButtonItem: editButtonItem)
         
         SearchBarService.setSearchBarProperty(searchBar: self.searchBar, searchBarDelegate: self, placeholder: "Search Folders", bookmark: true)
@@ -195,21 +192,4 @@ extension FolderViewController: UICollectionViewDelegate{
     
 }
 
-////MARK: PinterestLayoutDelegate
-//
-//extension FolderViewController: PinterestLayoutDelegate {
-//
-//    func collectionView(collectionView: UICollectionView,
-//                        heightForImageAtIndexPath indexPath: IndexPath,
-//                        withWidth: CGFloat) -> CGFloat {
-//        let image = #imageLiteral(resourceName: "folder_Details")
-//        return image.height(forWidth: withWidth)+20
-//    }
-//
-//    func collectionView(collectionView: UICollectionView,
-//                        heightForAnnotationAtIndexPath indexPath: IndexPath,
-//                        withWidth: CGFloat) -> CGFloat {
-//        return 0
-//    }
-//}
 

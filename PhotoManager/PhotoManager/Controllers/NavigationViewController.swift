@@ -40,23 +40,14 @@ class NavigationViewController: UIViewController, UIImagePickerControllerDelegat
         let firstTimeLaunch = self.defaults.bool(forKey: "firstTimeLaunch")
         
         if firstTimeLaunch == false{
-            
-//        
-//            if FirebaseService.getCurrentUserName() == ""{
-//                let loginViewController = storyboard?.instantiateViewController(withIdentifier: "authPage") as! AuthenticationViewController
-//                DispatchQueue.main.async {
-//                    self.present(loginViewController, animated: true, completion: nil)
-//                }
-//            }
+
             
             DemoDataService.dummyData()
             defaults.set(true, forKey: "firstTimeLaunch")
             LocationService.initLocationMgr(controller: self, locationMgr: locationMgr)
             CameraService.initCameraPicker(controller: self, pickerController: pickerController)
         }else{
-            print("1")
             if DirectoryFilePathService.checkIfAppIsReinstalled(){
-                print("2")
                 DirectoryFilePathService.changeOldImageFilePathToNewFilePath()
             }
             

@@ -72,6 +72,14 @@ class Image: Object{
         self.uploadedTime = uploadedTime
     }
     
+    public func setSubCategoryName(_ name: String){
+        self.subCategoryName = name
+    }
+    
+    public func setCategoryName(_ name: String){
+        self.categoryName = name
+    }
+    
     public func getLocation() -> Location{
         return self.location!
     }
@@ -238,72 +246,14 @@ class Image: Object{
         RealmService.shared.update(self, with: ["dateCreated": self.getDateCreated(), "imagePath": self.getImagePath(),"hashTags": hashtags])
         
     }
-//    
-//    public func uploadImageToFirebase(url: String?){
-//        let ref = Database.database().reference()
-//        //ref.child("user").setValue(selectedImage.getImageID())
-//        let calendar = Calendar.current
-//        
-//        let year = calendar.component(.year, from: self.getDateCreated())
-//        let month = calendar.component(.month, from: self.getDateCreated())
-//        let day = calendar.component(.day, from: self.getDateCreated())
-//        let hour = calendar.component(.hour, from: self.getDateCreated())
-//        let minute = calendar.component(.minute, from: self.getDateCreated())
-//        let second = calendar.component(.second, from: self.getDateCreated())
-//        
-//        let currentTime = Date()
-//        let currentYear = calendar.component(.year, from: currentTime)
-//        let currentMonth = calendar.component(.month, from: currentTime)
-//        let currentDay = calendar.component(.day, from: currentTime)
-//        let currentHour = calendar.component(.hour, from: currentTime)
-//        let currentMinute = calendar.component(.minute, from: currentTime)
-//        let currentSecond = calendar.component(.second, from: currentTime)
-//        
-//        print("email")
-//        
-//        var userEmail: String = (Auth.auth().currentUser?.email)!
-//        userEmail = userEmail.replacingOccurrences(of: ".", with: ",")
-//        
-//        ref.child(userEmail).child(self.getImageID()).setValue(
-//            [
-//                "imageID"      : self.getImageID(),
-//                "dateCreated"    :
-//                    ["year": year,
-//                     "month": month,
-//                     "day": day,
-//                     "hour": hour,
-//                     "minute": minute,
-//                     "second": second] as Any,
-//                
-//                "location"     :
-//                    ["locationID":self.getLocation().getLocationID(),
-//                     "latitude":self.getLocation().getLatitude(),
-//                     "longtitude":self.getLocation().getLongtitude(),
-//                     "street":self.getLocation().getStreet(),
-//                     "city":self.getLocation().getCity(),
-//                     "province":self.getLocation().getProvince()
-//                        ] as Any,
-//                "Hashtag"       : self.getHashTagDictionary(),
-//                "imageURL" : url!,
-//                "uploadedDate" :
-//                    ["year": currentYear,
-//                     "month": currentMonth,
-//                     "day": currentDay,
-//                     "hour": currentHour,
-//                     "minute": currentMinute,
-//                     "second": currentSecond] as Any,
-//                "categoryName" : self.categoryName,
-//                "subCategoryName" : self.subCategoryName
-//            ])
-//    }
-//    
-//    
-//    
 
     
     func loadImageFromPath() -> UIImage? {
         
         let image = UIImage(contentsOfFile: self.imagePath! as String)
+        
+        print("image path details......")
+        print(self.imagePath)
         
         if image == nil {
             return UIImage()
@@ -311,6 +261,7 @@ class Image: Object{
             return image
         }
     }
+    
     
     func getImageBinaryData() -> NSData{
         return UIImageJPEGRepresentation(self.loadImageFromPath()!, 0.9)! as NSData

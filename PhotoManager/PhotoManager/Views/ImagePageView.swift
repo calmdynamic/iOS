@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SDWebImage
 
 class ImagePageView: NSObject, UIPageViewControllerDataSource {
 
@@ -55,8 +56,33 @@ class ImagePageView: NSObject, UIPageViewControllerDataSource {
         if itemIndex < imageArray.count{
             let pageItemController = UIStoryboard.getViewController("Main", identifier: "ItemController") as! ImageSliderView
             pageItemController.itemIndex = itemIndex
-            pageItemController.image = imageArray[itemIndex].loadImageFromPath()!
             
+            print("url.....path")
+            print(imageArray[itemIndex].getImagePath())
+            
+            pageItemController.image = #imageLiteral(resourceName: "Placeholder")
+            
+            if imageArray[itemIndex].getImagePath().hasPrefix("https"){
+                
+               
+ 
+                let imageViewUI: UIImageView = UIImageView()
+                
+
+                
+                imageViewUI.sd_setImage(with: URL(string: self.imageArray[itemIndex].getImagePath() as! String), placeholderImage: #imageLiteral(resourceName: "Placeholder")) { (image, error, cacheType, url) in
+                    
+                    
+                    
+                    pageItemController.image = imageViewUI.image!
+                   
+                }
+                
+                
+            }else{
+            
+                pageItemController.image = imageArray[itemIndex].loadImageFromPath()!
+            }
             //pageItemController.scrollView.delegate = pageViewController
             
             return pageItemController
@@ -64,4 +90,7 @@ class ImagePageView: NSObject, UIPageViewControllerDataSource {
         
         return nil
     }
+    
+    
+
 }

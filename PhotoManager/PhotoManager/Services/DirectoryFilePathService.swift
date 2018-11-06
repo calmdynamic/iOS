@@ -11,14 +11,12 @@ import Foundation
 class DirectoryFilePathService{
     
     public static func checkIfAppIsReinstalled()-> Bool{
-        print("11")
         let images = RealmService.shared.realm.objects(Image.self)
 
         if images.count > 0 {
         let oldImagePathArr = images[0].getImagePath().components(separatedBy: "/")
         var oldImagePathCode = ""
         
-        print("22")
         for i in 0...oldImagePathArr.count-1{
             if oldImagePathArr[i] == "Application"{
                 oldImagePathCode = oldImagePathArr[i+1]

@@ -13,6 +13,7 @@ class ImageSliderView: UIViewController {
     fileprivate var isHidden = false
     var itemIndex: Int = 0
     
+    
     @IBOutlet weak var scrollView: UIScrollView!
     var image: UIImage = UIImage(){
         didSet{
@@ -26,9 +27,10 @@ class ImageSliderView: UIViewController {
     @IBOutlet weak var contentImageView: UIImageView!
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+     
 
         contentImageView.image = image
-        
         scrollView.delegate = self
         
         scrollView.minimumZoomScale = 1.0

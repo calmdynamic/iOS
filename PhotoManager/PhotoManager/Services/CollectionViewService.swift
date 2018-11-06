@@ -400,7 +400,6 @@ class CollectionViewService{
         layout.cellPadding = CGFloat(cellPadding)
         layout.numberOfColumns = numberOfColumns
     }
-    
 
 }
 

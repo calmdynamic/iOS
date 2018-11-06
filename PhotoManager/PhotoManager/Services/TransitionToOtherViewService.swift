@@ -53,10 +53,7 @@ class TransitionToOtherViewService{
             let indexpaths = collectionView.indexPathsForSelectedItems
             
             let selectedFolder = folderType.getFolderArray()[indexpaths![0].item]
-//
-//            print("printing.....1234")
-//            print(selectedFolder)
-            //imageVC.selectedFolderType = folderType
+
             imageVC.selectedFolder = selectedFolder
             
         }
@@ -73,14 +70,6 @@ class TransitionToOtherViewService{
             imageDetailVC.selectedFolder = selectedFolder
             
         }
-//        
-//        if segue.identifier == SEGUE_IDENTIFIER_FOR_IMAGE_TO_DOWNLOAD{
-//            let downloadVC = segue.destination as! DownloadListViewController
-//            //let indexpaths = self.collectionView?.indexPathsForSelectedItems
-//            downloadVC.selectedFolderTypeName = selectedFolder.getCategoryName()
-//            downloadVC.selectedFolder = selectedFolder
-//            //downloadVC.location = self.location
-//            
-//        }
+
     }
 }

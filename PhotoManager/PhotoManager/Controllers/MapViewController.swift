@@ -18,7 +18,6 @@ class MapViewController: UIViewController, CLLocationManagerDelegate, MKMapViewD
     
     @IBOutlet weak var showRefreshBtn: UIBarButtonItem!
     var selectedAnnotation: MKPointAnnotation?
-//    var lastRegion: MKCoordinateRegion = MKCoordinateRegion()
     var annotations: [MKPointAnnotation] = [MKPointAnnotation]()
     var locationSet: Set = Set<String>()
     @IBOutlet weak var searchBtn: UIBarButtonItem!

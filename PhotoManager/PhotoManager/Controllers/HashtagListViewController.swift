@@ -87,9 +87,10 @@ extension HashtagListViewController: UITableViewDelegate{
         }
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
-        
-        for i in indexpaths!{
-            self.selectedHashTag.append(self.hashtags[i.item])
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedHashTag.append(self.hashtags[i.item])
+            }
         }
     }
     
@@ -105,9 +106,11 @@ extension HashtagListViewController: UITableViewDelegate{
         }
         
         let indexpaths = self.tableView.indexPathsForSelectedRows
-        
-        for i in indexpaths!{
-            self.selectedHashTag.append(self.hashtags[i.item])
+      
+        if indexpaths != nil{
+            for i in indexpaths!{
+                self.selectedHashTag.append(self.hashtags[i.item])
+            }
         }
         
 }

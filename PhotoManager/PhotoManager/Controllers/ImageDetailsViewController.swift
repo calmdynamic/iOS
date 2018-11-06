@@ -9,22 +9,27 @@
 
 import UIKit
 import MapKit
+import SDWebImage
 
 class ImageDetailsViewController: UIViewController {
     
-
+    @IBOutlet weak var saveBtn: UIBarButtonItem!
+    
     @IBOutlet weak var mainView: UIView!
     fileprivate var pageViewController:UIPageViewController!
     var dataSource = ImagePageView()
     var currentIndex = 0
-//    var uploadingAlertView = UploadingOneImageView()
-    
+
     var selectedFolder: Folder!
     var currentImage: Image!
     var infoPropertyView = InformationPropertyView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if self.saveBtn.isEnabled != true{ self.navigationItem.setRightBarButton(nil, animated: false)
+        }
+        print("detailsss....")
         
         self.tabBarController?.tabBar.isHidden = true
         currentIndex = self.currentImage.getImageIndexFromArray(imageArray: selectedFolder.getImageArray())
@@ -57,6 +62,43 @@ class ImageDetailsViewController: UIViewController {
         
         
     }
+    
+    @IBAction func saveBtn(_ sender: Any) {
+        
+        var newSelectedFolder:Folder = Folder()
+        
+        let selectedFolderName = UserDefaultService.getUserDefaultFolderName2()
+        let selectedFolderTypeName = UserDefaultService.getUserDefaultFolderTypeName2()
+        
+        let selectedFolderType: Type = Type()
+        selectedFolderType.getFolderDataFromRealm(typeName: selectedFolderTypeName)
+        
+        for i in selectedFolderType.getFolderArray(){
+            if i.getName() == selectedFolderName{
+                newSelectedFolder = i
+            }
+        }
+        
+        let imageViewUI: UIImageView = UIImageView()
+        
+        
+        
+        imageViewUI.sd_setImage(with: URL(string: self.selectedFolder.getImageArray()[self.currentIndex].getImagePath() as! String), placeholderImage: #imageLiteral(resourceName: "Placeholder")) { (image, error, cacheType, url) in
+            
+            
+            
+            let uiImage = imageViewUI.image!
+            
+            newSelectedFolder.addImageToRealm(newImage: uiImage, location: self.selectedFolder.getImageArray()[self.currentIndex].getLocation(), date: self.selectedFolder.getImageArray()[self.currentIndex].getDateCreated())
+            
+            AlertDialog.showAlertMessage(controller: self, title: "", message: "Saved Successfully", btnTitle: "Ok")
+            
+        }
+        
+        
+       
+    }
+    
     
     fileprivate func setupDataSource(imageArray: [Image]) {
         dataSource.setupImageArray(imageArray: imageArray)
